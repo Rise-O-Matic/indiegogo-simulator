@@ -103,7 +103,33 @@ This research is performed during notebook development and the data is embedded 
 
 This serves as the empirical sanity check for the Kickstarter-derived model.
 
-### 3.4 Published Benchmarks
+### 3.4 Meta Business Suite Data (First-Party)
+
+Real performance data from the Bosscovers USA Meta accounts, captured 2026-04-07.
+Stored in `data/meta-insights-2026-04-07.md`.
+
+**Facebook (28-day period, Mar 10 - Apr 6, 2026):**
+- 69 followers (lifetime)
+- 101 views, 60 unique viewers, 4 content interactions, 1 link click, 31 page visits
+- 65.3% of views from non-followers (organic discovery works at small scale)
+
+**Instagram (same period):**
+- 124 followers
+- 645 views, 119 reach, 25 content interactions
+- ~3.9% engagement rate (above platform average)
+- 50.7% of views from non-followers
+
+**What this calibrates:**
+- Social follower-to-view rates: real data replaces benchmarks (Tier 2 instead of Tier 3)
+- Instagram outperforms Facebook ~6:1 on views -- simulator weights IG channel higher
+- FB link click rate: ~1% (1/101) -- usable as a floor estimate for social-to-page-visit conversion
+- IG engagement rate: ~3.9% -- usable for interaction modeling
+- No paid ad data (zero campaigns run) -- ad conversion stays at benchmark defaults
+- Posting frequency very low (1 post + 2 stories in 28 days) -- engagement is organic, not driven by content volume
+
+**Confidence tier:** Tier 2 (real first-party data, but small sample sizes warrant wide distributions)
+
+### 3.5 Published Benchmarks
 
 - **Funding curve:** U-shaped -- ~33% first 48h, ~33% middle, ~33% final 48h (multiple academic studies)
 - **Critical threshold:** Reaching 30% of goal in first 48 hours; below this correlates with 65% failure rate
