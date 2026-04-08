@@ -65,7 +65,8 @@ def run_simulation(inputs: SimulationInputs, n_runs: int = 10_000, seed: int = 4
             weights=weights,
             rng=rng,
         )
-        rev = calculate_revenue(daily_backers, inputs.cloak, inputs.fees)
+        rev = calculate_revenue(daily_backers, inputs.cloak, inputs.fees,
+                                max_fulfillment_days=inputs.campaign.max_fulfillment_days)
         all_raised[i] = rev["gross_revenue"]
         all_backers[i] = rev["total_backers"]
         all_net[i] = rev["net_revenue"]

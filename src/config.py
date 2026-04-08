@@ -11,6 +11,7 @@ class CloakConfig:
     early_bird_quantity: int = 50
     cogs_per_unit: float = 45.0
     shipping_per_unit: float = 12.0
+    units_per_day: int = 20
 
 
 @dataclass
@@ -19,6 +20,7 @@ class CampaignConfig:
     goal: float = 15_000.0
     duration_days: int = 30
     category: str = "Technology"
+    max_fulfillment_days: int = 90
 
 
 @dataclass
