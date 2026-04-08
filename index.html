@@ -93,11 +93,59 @@
     font-size: 0.85rem; font-weight: 600; text-align: center;
   }
 
+  /* Optimizer */
+  .opt-section {
+    background: var(--card); border-radius: 12px; padding: 14px;
+    margin-bottom: 12px; border: 1px solid #3a5a3a;
+  }
+  .opt-section .section-title { color: var(--green); }
+  .cost-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px;
+    margin-bottom: 12px; font-size: 0.82rem;
+  }
+  .cost-grid label { color: var(--muted); font-size: 0.75rem; }
+  .cost-grid input[type=number] {
+    width: 100%; background: var(--bg); border: 1px solid var(--border);
+    border-radius: 6px; padding: 6px 8px; color: var(--text);
+    font-size: 0.85rem; font-variant-numeric: tabular-nums;
+  }
+  .cost-grid input[type=number]:focus { outline: 1px solid var(--accent); }
+  .opt-btn {
+    width: 100%; padding: 12px; border: none; border-radius: 8px;
+    background: var(--green); color: #fff; font-size: 0.95rem;
+    font-weight: 700; cursor: pointer; margin-top: 4px;
+  }
+  .opt-btn:hover { filter: brightness(1.1); }
+  .opt-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .opt-result {
+    margin-top: 12px; font-size: 0.82rem;
+  }
+  .opt-result table {
+    width: 100%; border-collapse: collapse; margin-top: 8px;
+  }
+  .opt-result th {
+    text-align: left; color: var(--muted); font-size: 0.72rem;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    padding: 4px 6px; border-bottom: 1px solid var(--border);
+  }
+  .opt-result td {
+    padding: 5px 6px; border-bottom: 1px solid var(--border);
+    font-variant-numeric: tabular-nums;
+  }
+  .opt-result .chan-name { color: var(--text); }
+  .opt-result .positive { color: var(--green); }
+  .opt-result .zero { color: var(--muted); }
+  .opt-progress {
+    margin-top: 8px; font-size: 0.8rem; color: var(--muted);
+    text-align: center;
+  }
+
   @media (min-width: 640px) {
     body { padding: 24px; }
     .prob-big { font-size: 4rem; }
     .stats-grid { grid-template-columns: 1fr 1fr 1fr 1fr; }
     .slider-row label { flex: 0 0 150px; }
+    .cost-grid { grid-template-columns: 1fr 1fr 1fr; }
   }
 </style>
 </head>
@@ -184,6 +232,49 @@
   <canvas id="histChart" height="160"></canvas>
 </div>
 <div class="timing" id="timing"></div>
+
+<div class="opt-section">
+  <div class="section-title">Budget Optimizer</div>
+  <p style="font-size: 0.8rem; color: var(--muted); margin-bottom: 10px;">
+    Set your total pre-launch marketing budget and cost per unit for each channel.
+    The optimizer finds the allocation that maximizes your probability of funding.
+  </p>
+  <div class="slider-row">
+    <label>Total budget ($)</label>
+    <input type="range" id="totalBudget" min="0" max="10000" step="100" value="2000">
+    <span class="slider-val" id="totalBudgetVal">$2,000</span>
+  </div>
+  <div class="cost-grid">
+    <div>
+      <label>$/email subscriber</label>
+      <input type="number" id="costEmail" value="3" min="0.5" max="20" step="0.5">
+    </div>
+    <div>
+      <label>$/IG follower</label>
+      <input type="number" id="costIg" value="4" min="0.5" max="20" step="0.5">
+    </div>
+    <div>
+      <label>$/FB follower</label>
+      <input type="number" id="costFb" value="3" min="0.5" max="20" step="0.5">
+    </div>
+    <div>
+      <label>Ad budget ($/day x 30d)</label>
+      <input type="number" id="costAd" value="1" min="1" max="1" step="0" disabled
+             style="opacity:0.5" title="Ad budget is direct spend: slider value x 30 days">
+    </div>
+    <div>
+      <label>$/PR hit</label>
+      <input type="number" id="costPr" value="1000" min="100" max="5000" step="100">
+    </div>
+    <div>
+      <label>$/100 monthly visitors</label>
+      <input type="number" id="costSite" value="50" min="10" max="500" step="10">
+    </div>
+  </div>
+  <button class="opt-btn" id="optimizeBtn" onclick="runOptimizer()">Find Optimal Allocation</button>
+  <div class="opt-progress" id="optProgress"></div>
+  <div class="opt-result" id="optResult"></div>
+</div>
 
 <script>
 // =====================================================
@@ -766,6 +857,209 @@ sliderIds.forEach(id => {
   });
   $(id).addEventListener('change', updateDisplay);
 });
+
+// Budget slider label
+$('totalBudget').addEventListener('input', () => {
+  $('totalBudgetVal').textContent = '$' + (+$('totalBudget').value).toLocaleString();
+});
+
+// =====================================================
+// Budget Optimizer -- greedy hill-climbing
+// =====================================================
+
+function quickProb(params, nRuns) {
+  // Lighter simulation for optimizer -- only need P(funded)
+  const { emailList, igFollowers, fbFollowers, dailyAdBudget, prHits,
+          monthlyVisitors, goal, duration, ebPrice, ebQty } = params;
+  const stdPrice = 179.99;
+  const weights = ucurveWeights(duration);
+  let funded = 0;
+
+  for (let run = 0; run < nRuns; run++) {
+    const rng = makeRng(42 + run);
+    const backers = new Float64Array(duration);
+    const em = emailTraffic(rng, emailList, duration, weights);
+    const soc = socialTraffic(rng, igFollowers, fbFollowers, duration, weights);
+    const ads = paidAdsTraffic(rng, dailyAdBudget, duration, weights);
+    const prT = prTraffic(rng, prHits, duration, weights);
+    const web = websiteTraffic(rng, monthlyVisitors, duration, weights);
+    const org = iggOrganicTraffic(rng, duration, weights);
+
+    for (let i = 0; i < duration; i++)
+      backers[i] = em[i] + soc[i] + ads[i] + prT[i] + web[i] + org[i];
+
+    const cum = new Float64Array(duration);
+    cum[0] = backers[0];
+    for (let i = 1; i < duration; i++) cum[i] = cum[i-1] + backers[i];
+    const wom = womTraffic(rng, cum, duration);
+    for (let i = 0; i < duration; i++) backers[i] += wom[i];
+
+    let totalBackers = 0;
+    for (let i = 0; i < duration; i++) totalBackers += backers[i];
+    const ebB = Math.min(totalBackers, ebQty);
+    const stdB = totalBackers - ebB;
+    const gross = ebB * ebPrice + stdB * stdPrice;
+    if (gross >= goal) funded++;
+  }
+  return funded / nRuns;
+}
+
+async function runOptimizer() {
+  const btn = $('optimizeBtn');
+  const prog = $('optProgress');
+  const result = $('optResult');
+  btn.disabled = true;
+  result.innerHTML = '';
+
+  const budget = +$('totalBudget').value;
+  const costs = {
+    email:  +$('costEmail').value,
+    ig:     +$('costIg').value,
+    fb:     +$('costFb').value,
+    pr:     +$('costPr').value,
+    site:   +$('costSite').value,
+  };
+
+  // Base params from current campaign settings (not audience sliders)
+  const baseParams = {
+    emailList: 50,      // start from current state
+    igFollowers: 124,
+    fbFollowers: 69,
+    dailyAdBudget: 0,
+    prHits: 0,
+    monthlyVisitors: 100,
+    goal: +$('goal').value,
+    duration: +$('duration').value,
+    ebPrice: +$('ebPrice').value,
+    ebQty: +$('ebQty').value,
+  };
+
+  // Channel increments: how much one "unit" of spend buys
+  const channels = [
+    { key: 'emailList',       name: 'Email list',       cost: costs.email, step: 1, unit: 'subscribers' },
+    { key: 'igFollowers',     name: 'IG followers',     cost: costs.ig,    step: 1, unit: 'followers' },
+    { key: 'fbFollowers',     name: 'FB followers',     cost: costs.fb,    step: 1, unit: 'followers' },
+    { key: 'dailyAdBudget',   name: 'Ad budget',        cost: 30,          step: 1, unit: '$/day' },  // $1/day x 30 days = $30
+    { key: 'prHits',          name: 'PR / media',       cost: costs.pr,    step: 1, unit: 'hits' },
+    { key: 'monthlyVisitors', name: 'Site visitors',    cost: costs.site / 100, step: 1, unit: 'visitors/mo' },
+  ];
+
+  // Greedy: spend budget in chunks, pick best channel each round
+  const chunkSize = Math.max(50, Math.round(budget / 40)); // ~40 rounds
+  let spent = 0;
+  const allocation = {};
+  channels.forEach(c => allocation[c.key] = 0);
+  const params = { ...baseParams };
+  const OPT_RUNS = 300; // fast per evaluation
+  let step = 0;
+  const totalSteps = Math.ceil(budget / chunkSize);
+
+  prog.textContent = 'Optimizing...';
+
+  // Use setTimeout to keep UI responsive
+  await new Promise(resolve => {
+    function doStep() {
+      if (spent + chunkSize > budget + 1) {
+        finish();
+        resolve();
+        return;
+      }
+
+      let bestChannel = null;
+      let bestProb = -1;
+
+      for (const ch of channels) {
+        const unitsCanBuy = Math.floor(chunkSize / ch.cost);
+        if (unitsCanBuy < 1) continue;
+
+        const testParams = { ...params };
+        testParams[ch.key] = params[ch.key] + unitsCanBuy * ch.step;
+        const p = quickProb(testParams, OPT_RUNS);
+        if (p > bestProb) {
+          bestProb = p;
+          bestChannel = ch;
+        }
+      }
+
+      if (bestChannel) {
+        const unitsCanBuy = Math.floor(chunkSize / bestChannel.cost);
+        const actualCost = unitsCanBuy * bestChannel.cost;
+        params[bestChannel.key] += unitsCanBuy * bestChannel.step;
+        allocation[bestChannel.key] += unitsCanBuy * bestChannel.step;
+        spent += actualCost;
+      } else {
+        spent = budget; // can't buy anything
+      }
+
+      step++;
+      const pct = Math.round(step / totalSteps * 100);
+      prog.textContent = `Optimizing... ${pct}% (${step}/${totalSteps} rounds)`;
+
+      setTimeout(doStep, 0);
+    }
+    doStep();
+  });
+
+  function finish() {
+    // Final probability with more runs
+    const finalProb = quickProb(params, 500);
+    const baseProb = quickProb(baseParams, 500);
+
+    // Calculate cost per channel
+    let totalSpent = 0;
+    const rows = channels.map(ch => {
+      const units = allocation[ch.key];
+      const cost = ch.key === 'dailyAdBudget' ? units * 30 : units * ch.cost;
+      totalSpent += cost;
+      return { name: ch.name, units, unit: ch.unit, cost, current: baseParams[ch.key], recommended: params[ch.key] };
+    }).filter(r => r.units > 0).sort((a, b) => b.cost - a.cost);
+
+    let html = `
+      <div style="margin-top:10px; padding:10px; background:var(--bg); border-radius:8px;">
+        <div style="text-align:center; margin-bottom:8px;">
+          <span style="color:var(--muted)">P(funded):</span>
+          <span style="font-size:1.1rem; font-weight:700; color:var(--green);">${Math.round(baseProb*100)}% &rarr; ${Math.round(finalProb*100)}%</span>
+          <span style="color:var(--muted); font-size:0.8rem;"> for ${fmt(totalSpent)} spent</span>
+        </div>
+      </div>
+      <table>
+        <tr><th>Channel</th><th>Now</th><th>Target</th><th>Add</th><th>Cost</th></tr>
+    `;
+    for (const r of rows) {
+      const cls = r.units > 0 ? 'positive' : 'zero';
+      const addStr = r.key === 'dailyAdBudget'
+        ? `+$${r.units}/day`
+        : `+${r.units.toLocaleString()}`;
+      html += `<tr>
+        <td class="chan-name">${r.name}</td>
+        <td>${r.current.toLocaleString()}</td>
+        <td class="${cls}">${r.recommended.toLocaleString()}</td>
+        <td class="${cls}">${addStr}</td>
+        <td>${fmt(r.cost)}</td>
+      </tr>`;
+    }
+    html += '</table>';
+
+    // Apply button
+    html += `<button class="opt-btn" style="margin-top:10px; background:var(--accent);"
+               onclick="applyOptimal(${JSON.stringify(params).replace(/"/g, '&quot;')})">
+               Apply to Sliders</button>`;
+
+    result.innerHTML = html;
+    prog.textContent = `Done -- ${step} rounds evaluated`;
+    btn.disabled = false;
+  }
+}
+
+function applyOptimal(params) {
+  $('email').value = params.emailList;
+  $('ig').value = params.igFollowers;
+  $('fb').value = params.fbFollowers;
+  $('adBudget').value = params.dailyAdBudget;
+  $('pr').value = params.prHits;
+  $('site').value = params.monthlyVisitors;
+  updateDisplay();
+}
 
 // Initial render
 updateDisplay();
