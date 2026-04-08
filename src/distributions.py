@@ -29,12 +29,12 @@ EMAIL_PAGE_TO_BACKER = DistParam(stats.beta(a=3, b=47), tier=3, source="Estimate
 # --- Social (Instagram) ---
 IG_REACH_RATE = DistParam(stats.beta(a=5, b=95), tier=2, source="Meta data: ~5% organic reach per post")
 IG_CTR = DistParam(stats.beta(a=2, b=98), tier=2, source="Meta data: ~2% CTR estimate")
-IG_PAGE_TO_BACKER = DistParam(stats.beta(a=1, b=99), tier=3, source="Estimated ~1% social visitor backs")
+IG_PAGE_TO_BACKER = DistParam(stats.beta(a=3, b=97), tier=3, source="Estimated ~3% social visitor backs")
 
 # --- Social (Facebook) ---
 FB_REACH_RATE = DistParam(stats.beta(a=3, b=97), tier=2, source="Meta data: ~3% organic reach")
 FB_CTR = DistParam(stats.beta(a=1, b=99), tier=2, source="Meta data: ~1% link click rate")
-FB_PAGE_TO_BACKER = DistParam(stats.beta(a=1, b=99), tier=3, source="Estimated ~1% social visitor backs")
+FB_PAGE_TO_BACKER = DistParam(stats.beta(a=3, b=97), tier=3, source="Estimated ~3% social visitor backs")
 
 # --- Paid ads ---
 AD_CPM = DistParam(stats.lognorm(s=0.4, scale=12.0), tier=1, source="Meta Ads ~$12 CPM physical products")

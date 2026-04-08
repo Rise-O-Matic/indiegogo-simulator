@@ -21,15 +21,15 @@ def generate_ucurve_weights(duration_days: int) -> np.ndarray:
     """
     days = np.arange(duration_days, dtype=float)
 
-    # Launch burst: exponential decay from day 0
-    launch_burst = np.exp(-days / 2.0)
+    # Launch burst: exponential decay from day 0, half-life ~2.5 days
+    launch_burst = np.exp(-days / 2.5)
 
     # Deadline surge: exponential growth toward final day
     days_remaining = duration_days - 1 - days
-    deadline_surge = np.exp(-days_remaining / 2.0)
+    deadline_surge = np.exp(-days_remaining / 2.5)
 
-    # Baseline: constant low-level activity throughout
-    baseline = np.ones(duration_days) * 0.1
+    # Low baseline
+    baseline = np.ones(duration_days) * 0.02
 
     # Combine
     raw = launch_burst + deadline_surge + baseline

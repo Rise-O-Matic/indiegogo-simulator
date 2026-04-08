@@ -48,14 +48,23 @@ def funding_trajectory_fan_chart(trajectories, goal, duration_days):
     plt.tight_layout()
     return fig
 
+def _format_delta(val):
+    if isinstance(val, int):
+        return f"+{val:,}" if val >= 0 else f"{val:,}"
+    return f"+${val:,.0f}" if val >= 0 else f"-${abs(val):,.0f}"
+
+
 def gap_analysis_table(gap_data, target_pct=70):
     rows = []
     for channel, data in gap_data.items():
+        you_need_str = f"{data['you_need']:,}" if isinstance(data["you_need"], int) else f"${data['you_need']:,.0f}"
+        if "reachable" in data and not data["reachable"]:
+            you_need_str += " (insufficient alone)"
         row = {
             "Channel": channel.replace("_", " ").title(),
             "You Have": f"{data['you_have']:,}" if isinstance(data["you_have"], int) else f"${data['you_have']:,.0f}",
-            f"You Need ({target_pct}%)": f"{data['you_need']:,}" if isinstance(data["you_need"], int) else f"${data['you_need']:,.0f}",
-            "Delta": f"+{data['delta']:,}" if isinstance(data["delta"], int) else f"+${data['delta']:,.0f}",
+            f"You Need ({target_pct}%)": you_need_str,
+            "Delta": _format_delta(data["delta"]),
             "Difficulty": data["difficulty"],
         }
         if "market_check" in data:

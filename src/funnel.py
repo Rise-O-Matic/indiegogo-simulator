@@ -110,9 +110,14 @@ def word_of_mouth_traffic(cumulative_backers, duration_days, rng):
     tells = _sample(D.WOM_TELLS, rng)
     visit_rate = _sample(D.WOM_VISIT_RATE, rng)
     page_to_backer = _sample(D.WOM_PAGE_TO_BACKER, rng)
+
+    # Use daily new backers, not cumulative (each backer refers once)
+    daily_new = np.diff(cumulative_backers, prepend=0)
+
     wom_backers = np.zeros(duration_days)
     for day in range(1, duration_days):
-        new_referrals = cumulative_backers[day - 1] * tells * visit_rate * page_to_backer
+        # Only new backers from previous day generate referrals
+        new_referrals = daily_new[day - 1] * tells * visit_rate * page_to_backer
         wom_backers[day] = rng.poisson(max(new_referrals, 0))
     return wom_backers
 

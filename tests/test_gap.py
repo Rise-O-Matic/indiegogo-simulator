@@ -4,7 +4,7 @@ from src.simulation import SimulationInputs
 
 def test_find_required_email_list():
     base_inputs = SimulationInputs(ig_followers=100, fb_followers=50, daily_ad_budget=50.0)
-    required = find_required_value(
+    required, reached = find_required_value(
         base_inputs=base_inputs,
         param_name="email_list",
         target_probability=0.5,
@@ -14,6 +14,7 @@ def test_find_required_email_list():
     )
     assert isinstance(required, int)
     assert 0 <= required <= 20_000
+    assert isinstance(reached, bool)
 
 
 def test_gap_analysis_returns_all_channels():
