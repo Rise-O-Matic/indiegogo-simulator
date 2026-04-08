@@ -353,31 +353,31 @@ function poissonSample(rng, lambda) {
   return k - 1;
 }
 
-// -- Distribution definitions (matching distributions.py) --
+// -- Distribution definitions (CMA-ES calibrated 2026-04-07, loss=2.52) --
 const DISTS = {
-  EMAIL_OPEN_RATE:       { type: 'beta', a: 20, b: 80 },
-  EMAIL_CTR:             { type: 'beta', a: 3, b: 97 },
-  EMAIL_PAGE_TO_BACKER:  { type: 'beta', a: 3, b: 47 },
-  IG_REACH_RATE:         { type: 'beta', a: 5, b: 95 },
-  IG_CTR:                { type: 'beta', a: 2, b: 98 },
-  IG_PAGE_TO_BACKER:     { type: 'beta', a: 3, b: 97 },
-  FB_REACH_RATE:         { type: 'beta', a: 3, b: 97 },
-  FB_CTR:                { type: 'beta', a: 1, b: 99 },
-  FB_PAGE_TO_BACKER:     { type: 'beta', a: 3, b: 97 },
-  AD_CPM:                { type: 'lognormal', s: 0.4, scale: 12.0 },
-  AD_CTR:                { type: 'beta', a: 1.5, b: 98.5 },
-  AD_PAGE_TO_BACKER:     { type: 'beta', a: 1, b: 99 },
-  PR_REACH_PER_HIT:      { type: 'lognormal', s: 1.0, scale: 5000 },
-  PR_CTR:                { type: 'beta', a: 0.5, b: 99.5 },
-  PR_PAGE_TO_BACKER:     { type: 'beta', a: 2, b: 98 },
-  SITE_CAMPAIGN_MULT:    { type: 'lognormal', s: 0.3, scale: 1.5 },
-  SITE_TO_IGG_CTR:       { type: 'beta', a: 5, b: 95 },
-  SITE_PAGE_TO_BACKER:   { type: 'beta', a: 3, b: 97 },
-  IGG_DAILY_VISITORS:    { type: 'lognormal', s: 0.5, scale: 50 },
-  IGG_PAGE_TO_BACKER:    { type: 'beta', a: 2, b: 98 },
-  WOM_TELLS:             { type: 'lognormal', s: 0.5, scale: 2.0 },
-  WOM_VISIT_RATE:        { type: 'beta', a: 10, b: 90 },
-  WOM_PAGE_TO_BACKER:    { type: 'beta', a: 3, b: 97 },
+  EMAIL_OPEN_RATE:       { type: 'beta', a: 23.22, b: 76.78 },
+  EMAIL_CTR:             { type: 'beta', a: 19.47, b: 80.53 },
+  EMAIL_PAGE_TO_BACKER:  { type: 'beta', a: 2.09, b: 47.91 },
+  IG_REACH_RATE:         { type: 'beta', a: 9.67, b: 90.33 },
+  IG_CTR:                { type: 'beta', a: 0.75, b: 99.25 },
+  IG_PAGE_TO_BACKER:     { type: 'beta', a: 9.31, b: 90.69 },
+  FB_REACH_RATE:         { type: 'beta', a: 2.75, b: 97.25 },
+  FB_CTR:                { type: 'beta', a: 2.20, b: 97.80 },
+  FB_PAGE_TO_BACKER:     { type: 'beta', a: 0.62, b: 99.38 },
+  AD_CPM:                { type: 'lognormal', s: 0.4, scale: 28.96 },
+  AD_CTR:                { type: 'beta', a: 0.82, b: 99.18 },
+  AD_PAGE_TO_BACKER:     { type: 'beta', a: 1.58, b: 98.42 },
+  PR_REACH_PER_HIT:      { type: 'lognormal', s: 1.0, scale: 3117 },
+  PR_CTR:                { type: 'beta', a: 0.36, b: 99.64 },
+  PR_PAGE_TO_BACKER:     { type: 'beta', a: 3.44, b: 96.56 },
+  SITE_CAMPAIGN_MULT:    { type: 'lognormal', s: 0.3, scale: 4.82 },
+  SITE_TO_IGG_CTR:       { type: 'beta', a: 11.90, b: 88.10 },
+  SITE_PAGE_TO_BACKER:   { type: 'beta', a: 19.78, b: 80.22 },
+  IGG_DAILY_VISITORS:    { type: 'lognormal', s: 0.5, scale: 1845 },
+  IGG_PAGE_TO_BACKER:    { type: 'beta', a: 0.20, b: 99.80 },
+  WOM_TELLS:             { type: 'lognormal', s: 0.5, scale: 0.86 },
+  WOM_VISIT_RATE:        { type: 'beta', a: 6.26, b: 93.74 },
+  WOM_PAGE_TO_BACKER:    { type: 'beta', a: 8.13, b: 91.87 },
 };
 
 function sampleDist(rng, d) {
@@ -521,10 +521,15 @@ function womTraffic(rng, cumulativeBackers, duration) {
 }
 
 // -- Revenue calculation (matching revenue.py) --
+const UNITS_PER_DAY = 20;
+const MAX_FULFILLMENT_DAYS = 90;
+const MAX_UNITS = UNITS_PER_DAY * MAX_FULFILLMENT_DAYS;
+
 function calculateRevenue(dailyBackers, ebPrice, ebQty, stdPrice, duration) {
-  let totalBackers = 0;
-  for (let i = 0; i < duration; i++) totalBackers += dailyBackers[i];
-  if (totalBackers === 0) return { gross: 0, net: 0, backers: 0, dailyCum: new Float64Array(duration) };
+  let rawBackers = 0;
+  for (let i = 0; i < duration; i++) rawBackers += dailyBackers[i];
+  const totalBackers = Math.min(rawBackers, MAX_UNITS);
+  if (totalBackers === 0) return { gross: 0, net: 0, backers: 0, dailyCum: new Float64Array(duration), fulfillmentDays: 0, capped: false };
 
   const ebBackers = Math.min(totalBackers, ebQty);
   const stdBackers = totalBackers - ebBackers;
@@ -552,14 +557,15 @@ function calculateRevenue(dailyBackers, ebPrice, ebQty, stdPrice, duration) {
     dailyCum[i] = cumRev;
   }
 
-  return { gross, net, backers: totalBackers, dailyCum };
+  const fulfillmentDays = UNITS_PER_DAY > 0 ? Math.ceil(totalBackers / UNITS_PER_DAY) : 0;
+  return { gross, net, backers: totalBackers, dailyCum, fulfillmentDays, capped: rawBackers > MAX_UNITS };
 }
 
 // -- Main simulation --
 function runSimulation(params) {
   const { emailList, igFollowers, fbFollowers, dailyAdBudget, prHits,
           monthlyVisitors, goal, duration, ebPrice, ebQty } = params;
-  const stdPrice = 179.99;
+  const stdPrice = 200.00;
   const weights = ucurveWeights(duration);
 
   const allRaised = new Float64Array(N_RUNS);
@@ -871,7 +877,7 @@ function quickProb(params, nRuns) {
   // Lighter simulation for optimizer -- only need P(funded)
   const { emailList, igFollowers, fbFollowers, dailyAdBudget, prHits,
           monthlyVisitors, goal, duration, ebPrice, ebQty } = params;
-  const stdPrice = 179.99;
+  const stdPrice = 200.00;
   const weights = ucurveWeights(duration);
   let funded = 0;
 
