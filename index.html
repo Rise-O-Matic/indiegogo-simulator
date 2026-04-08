@@ -920,135 +920,188 @@ async function runOptimizer() {
     site:   +$('costSite').value,
   };
 
-  // Base params from current campaign settings (not audience sliders)
+  // Base params from current slider positions
   const baseParams = {
-    emailList: 50,      // start from current state
-    igFollowers: 124,
-    fbFollowers: 69,
-    dailyAdBudget: 0,
-    prHits: 0,
-    monthlyVisitors: 100,
-    goal: +$('goal').value,
-    duration: +$('duration').value,
-    ebPrice: +$('ebPrice').value,
-    ebQty: +$('ebQty').value,
+    emailList:      +$('email').value,
+    igFollowers:    +$('ig').value,
+    fbFollowers:    +$('fb').value,
+    dailyAdBudget:  +$('adBudget').value,
+    prHits:         +$('pr').value,
+    monthlyVisitors:+$('site').value,
+    goal:           +$('goal').value,
+    duration:       +$('duration').value,
+    ebPrice:        +$('ebPrice').value,
+    ebQty:          +$('ebQty').value,
   };
 
-  // Channel increments: how much one "unit" of spend buys
+  // Channels: key, name, cost per unit, max units budget can buy
   const channels = [
-    { key: 'emailList',       name: 'Email list',       cost: costs.email, step: 1, unit: 'subscribers' },
-    { key: 'igFollowers',     name: 'IG followers',     cost: costs.ig,    step: 1, unit: 'followers' },
-    { key: 'fbFollowers',     name: 'FB followers',     cost: costs.fb,    step: 1, unit: 'followers' },
-    { key: 'dailyAdBudget',   name: 'Ad budget',        cost: 30,          step: 1, unit: '$/day' },  // $1/day x 30 days = $30
-    { key: 'prHits',          name: 'PR / media',       cost: costs.pr,    step: 1, unit: 'hits' },
-    { key: 'monthlyVisitors', name: 'Site visitors',    cost: costs.site / 100, step: 1, unit: 'visitors/mo' },
+    { key: 'emailList',       name: 'Email list',    costPer: costs.email,       unit: 'subscribers' },
+    { key: 'igFollowers',     name: 'IG followers',  costPer: costs.ig,          unit: 'followers' },
+    { key: 'fbFollowers',     name: 'FB followers',  costPer: costs.fb,          unit: 'followers' },
+    { key: 'dailyAdBudget',   name: 'Ad budget',     costPer: 30,               unit: '$/day' }, // $1/day x 30d
+    { key: 'prHits',          name: 'PR / media',    costPer: costs.pr,          unit: 'hits' },
+    { key: 'monthlyVisitors', name: 'Site visitors',  costPer: costs.site / 100, unit: 'visitors/mo' },
   ];
 
-  // Greedy: spend budget in chunks, pick best channel each round
-  const chunkSize = Math.max(50, Math.round(budget / 40)); // ~40 rounds
-  let spent = 0;
-  const allocation = {};
-  channels.forEach(c => allocation[c.key] = 0);
-  const params = { ...baseParams };
-  const OPT_RUNS = 300; // fast per evaluation
-  let step = 0;
-  const totalSteps = Math.ceil(budget / chunkSize);
+  // Max units each channel can absorb
+  const maxUnits = channels.map(ch => {
+    const max = Math.floor(budget / ch.costPer);
+    // Cap to sensible limits
+    if (ch.key === 'prHits') return Math.min(max, 10);
+    if (ch.key === 'dailyAdBudget') return Math.min(max, 500);
+    return Math.min(max, 10000);
+  });
+
+  // Generate random allocation vectors using Dirichlet-like sampling
+  const rng = makeRng(123);
+  const N_CANDIDATES = 200;
+  const OPT_RUNS = 500;
+  const candidates = [];
+
+  // Always include some focused allocations (100% on one channel)
+  for (let i = 0; i < channels.length; i++) {
+    const alloc = new Array(channels.length).fill(0);
+    alloc[i] = 1.0;
+    candidates.push(alloc);
+  }
+
+  // Add some 50/50 splits
+  for (let i = 0; i < channels.length; i++) {
+    for (let j = i + 1; j < channels.length; j++) {
+      const alloc = new Array(channels.length).fill(0);
+      alloc[i] = 0.5; alloc[j] = 0.5;
+      candidates.push(alloc);
+    }
+  }
+
+  // Fill the rest with random allocations
+  while (candidates.length < N_CANDIDATES) {
+    const raw = channels.map(() => -Math.log(rng.uniform() + 1e-10));
+    const sum = raw.reduce((a, b) => a + b, 0);
+    candidates.push(raw.map(v => v / sum));
+  }
+
+  // Evaluate each candidate
+  let bestProb = -1;
+  let bestParams = null;
+  let bestAlloc = null;
+  let bestSpent = 0;
 
   prog.textContent = 'Optimizing...';
 
-  // Use setTimeout to keep UI responsive
+  let idx = 0;
   await new Promise(resolve => {
-    function doStep() {
-      if (spent + chunkSize > budget + 1) {
-        finish();
-        resolve();
-        return;
+    function evalNext() {
+      if (idx >= candidates.length) { resolve(); return; }
+
+      const alloc = candidates[idx];
+      const params = { ...baseParams };
+      let spent = 0;
+
+      for (let i = 0; i < channels.length; i++) {
+        const dollarShare = budget * alloc[i];
+        let units = Math.floor(dollarShare / channels[i].costPer);
+        units = Math.min(units, maxUnits[i]);
+        const cost = units * channels[i].costPer;
+        spent += cost;
+        params[channels[i].key] = baseParams[channels[i].key] + units;
       }
 
-      let bestChannel = null;
-      let bestProb = -1;
-
-      for (const ch of channels) {
-        const unitsCanBuy = Math.floor(chunkSize / ch.cost);
-        if (unitsCanBuy < 1) continue;
-
-        const testParams = { ...params };
-        testParams[ch.key] = params[ch.key] + unitsCanBuy * ch.step;
-        const p = quickProb(testParams, OPT_RUNS);
-        if (p > bestProb) {
-          bestProb = p;
-          bestChannel = ch;
-        }
+      const p = quickProb(params, OPT_RUNS);
+      if (p > bestProb) {
+        bestProb = p;
+        bestParams = { ...params };
+        bestAlloc = alloc;
+        bestSpent = spent;
       }
 
-      if (bestChannel) {
-        const unitsCanBuy = Math.floor(chunkSize / bestChannel.cost);
-        const actualCost = unitsCanBuy * bestChannel.cost;
-        params[bestChannel.key] += unitsCanBuy * bestChannel.step;
-        allocation[bestChannel.key] += unitsCanBuy * bestChannel.step;
-        spent += actualCost;
-      } else {
-        spent = budget; // can't buy anything
+      idx++;
+      if (idx % 5 === 0) {
+        const pct = Math.round(idx / candidates.length * 100);
+        prog.textContent = `Evaluating allocation ${idx}/${candidates.length} (${pct}%) -- best so far: ${Math.round(bestProb*100)}%`;
       }
-
-      step++;
-      const pct = Math.round(step / totalSteps * 100);
-      prog.textContent = `Optimizing... ${pct}% (${step}/${totalSteps} rounds)`;
-
-      setTimeout(doStep, 0);
+      setTimeout(evalNext, 0);
     }
-    doStep();
+    evalNext();
   });
 
-  function finish() {
-    // Final probability with more runs
-    const finalProb = quickProb(params, 500);
-    const baseProb = quickProb(baseParams, 500);
+  // Refine: try small variations around the best
+  prog.textContent = 'Refining best allocation...';
+  const refineRng = makeRng(456);
+  for (let r = 0; r < 50; r++) {
+    const tweaked = bestAlloc.map(v => Math.max(0, v + (refineRng.uniform() - 0.5) * 0.2));
+    const sum = tweaked.reduce((a, b) => a + b, 0);
+    const normed = tweaked.map(v => v / sum);
 
-    // Calculate cost per channel
-    let totalSpent = 0;
-    const rows = channels.map(ch => {
-      const units = allocation[ch.key];
-      const cost = ch.key === 'dailyAdBudget' ? units * 30 : units * ch.cost;
-      totalSpent += cost;
-      return { name: ch.name, units, unit: ch.unit, cost, current: baseParams[ch.key], recommended: params[ch.key] };
-    }).filter(r => r.units > 0).sort((a, b) => b.cost - a.cost);
-
-    let html = `
-      <div style="margin-top:10px; padding:10px; background:var(--bg); border-radius:8px;">
-        <div style="text-align:center; margin-bottom:8px;">
-          <span style="color:var(--muted)">P(funded):</span>
-          <span style="font-size:1.1rem; font-weight:700; color:var(--green);">${Math.round(baseProb*100)}% &rarr; ${Math.round(finalProb*100)}%</span>
-          <span style="color:var(--muted); font-size:0.8rem;"> for ${fmt(totalSpent)} spent</span>
-        </div>
-      </div>
-      <table>
-        <tr><th>Channel</th><th>Now</th><th>Target</th><th>Add</th><th>Cost</th></tr>
-    `;
-    for (const r of rows) {
-      const cls = r.units > 0 ? 'positive' : 'zero';
-      const addStr = r.key === 'dailyAdBudget'
-        ? `+$${r.units}/day`
-        : `+${r.units.toLocaleString()}`;
-      html += `<tr>
-        <td class="chan-name">${r.name}</td>
-        <td>${r.current.toLocaleString()}</td>
-        <td class="${cls}">${r.recommended.toLocaleString()}</td>
-        <td class="${cls}">${addStr}</td>
-        <td>${fmt(r.cost)}</td>
-      </tr>`;
+    const params = { ...baseParams };
+    let spent = 0;
+    for (let i = 0; i < channels.length; i++) {
+      let units = Math.floor(budget * normed[i] / channels[i].costPer);
+      units = Math.min(units, maxUnits[i]);
+      spent += units * channels[i].costPer;
+      params[channels[i].key] = baseParams[channels[i].key] + units;
     }
-    html += '</table>';
-
-    // Apply button
-    html += `<button class="opt-btn" style="margin-top:10px; background:var(--accent);"
-               onclick="applyOptimal(${JSON.stringify(params).replace(/"/g, '&quot;')})">
-               Apply to Sliders</button>`;
-
-    result.innerHTML = html;
-    prog.textContent = `Done -- ${step} rounds evaluated`;
-    btn.disabled = false;
+    const p = quickProb(params, OPT_RUNS);
+    if (p > bestProb) {
+      bestProb = p;
+      bestParams = { ...params };
+      bestAlloc = normed;
+      bestSpent = spent;
+    }
   }
+
+  // Final evaluation with more runs for accuracy
+  const finalProb = quickProb(bestParams, 1000);
+  const baseProb = quickProb(baseParams, 1000);
+
+  // Build results table
+  const rows = [];
+  for (let i = 0; i < channels.length; i++) {
+    const ch = channels[i];
+    const added = bestParams[ch.key] - baseParams[ch.key];
+    if (added <= 0) continue;
+    const cost = added * ch.costPer;
+    rows.push({
+      name: ch.name, key: ch.key, unit: ch.unit,
+      current: baseParams[ch.key], recommended: bestParams[ch.key],
+      added, cost,
+    });
+  }
+  rows.sort((a, b) => b.cost - a.cost);
+
+  let html = `
+    <div style="margin-top:10px; padding:10px; background:var(--bg); border-radius:8px;">
+      <div style="text-align:center; margin-bottom:8px;">
+        <span style="color:var(--muted)">P(funded):</span>
+        <span style="font-size:1.1rem; font-weight:700; color:var(--green);">${Math.round(baseProb*100)}% &rarr; ${Math.round(finalProb*100)}%</span>
+        <span style="color:var(--muted); font-size:0.8rem;"> for ${fmt(bestSpent)} spent</span>
+      </div>
+    </div>
+    <table>
+      <tr><th>Channel</th><th>Now</th><th>Target</th><th>Add</th><th>Cost</th></tr>
+  `;
+  for (const r of rows) {
+    const addStr = r.key === 'dailyAdBudget'
+      ? `+$${r.added}/day`
+      : `+${r.added.toLocaleString()}`;
+    html += `<tr>
+      <td class="chan-name">${r.name}</td>
+      <td>${r.current.toLocaleString()}</td>
+      <td class="positive">${r.recommended.toLocaleString()}</td>
+      <td class="positive">${addStr}</td>
+      <td>${fmt(r.cost)}</td>
+    </tr>`;
+  }
+  html += '</table>';
+
+  html += `<button class="opt-btn" style="margin-top:10px; background:var(--accent);"
+             onclick="applyOptimal(${JSON.stringify(bestParams).replace(/"/g, '&quot;')})">
+             Apply to Sliders</button>`;
+
+  result.innerHTML = html;
+  prog.textContent = `Done -- tested ${N_CANDIDATES + 50} allocations`;
+  btn.disabled = false;
 }
 
 function applyOptimal(params) {
