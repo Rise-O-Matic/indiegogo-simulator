@@ -10,7 +10,6 @@ def test_simulation_output_shape():
         fb_followers=50,
         daily_ad_budget=50.0,
         pr_hits=1,
-        monthly_site_visitors=200,
     )
     results = run_simulation(inputs, n_runs=100, seed=42)
     assert isinstance(results, SimulationResults)

@@ -194,11 +194,6 @@
     <input type="range" id="pr" min="0" max="10" step="1" value="0">
     <span class="slider-val" id="prVal">0</span>
   </div>
-  <div class="slider-row">
-    <label>Monthly visitors</label>
-    <input type="range" id="site" min="0" max="10000" step="50" value="100">
-    <span class="slider-val" id="siteVal">100</span>
-  </div>
 </div>
 
 <div class="controls">
@@ -265,10 +260,6 @@
     <div>
       <label>$/PR hit</label>
       <input type="number" id="costPr" value="1000" min="100" max="5000" step="100">
-    </div>
-    <div>
-      <label>$/100 monthly visitors</label>
-      <input type="number" id="costSite" value="50" min="10" max="500" step="10">
     </div>
   </div>
   <button class="opt-btn" id="optimizeBtn" onclick="runOptimizer()">Find Optimal Allocation</button>
@@ -370,9 +361,6 @@ const DISTS = {
   PR_REACH_PER_HIT:      { type: 'lognormal', s: 1.0, scale: 3117 },
   PR_CTR:                { type: 'beta', a: 0.36, b: 99.64 },
   PR_PAGE_TO_BACKER:     { type: 'beta', a: 3.44, b: 96.56 },
-  SITE_CAMPAIGN_MULT:    { type: 'lognormal', s: 0.3, scale: 4.82 },
-  SITE_TO_IGG_CTR:       { type: 'beta', a: 11.90, b: 88.10 },
-  SITE_PAGE_TO_BACKER:   { type: 'beta', a: 19.78, b: 80.22 },
   IGG_DAILY_VISITORS:    { type: 'lognormal', s: 0.5, scale: 1845 },
   IGG_PAGE_TO_BACKER:    { type: 'beta', a: 0.20, b: 99.80 },
   WOM_TELLS:             { type: 'lognormal', s: 0.5, scale: 0.86 },
@@ -481,19 +469,6 @@ function prTraffic(rng, numHits, duration, weights) {
   return out;
 }
 
-function websiteTraffic(rng, monthlyVisitors, duration, weights) {
-  if (monthlyVisitors <= 0) return new Float64Array(duration);
-  const mult = sampleDist(rng, DISTS.SITE_CAMPAIGN_MULT);
-  const dailyVisitors = (monthlyVisitors / 30) * mult;
-  const ctr = sampleDist(rng, DISTS.SITE_TO_IGG_CTR);
-  const p2b = sampleDist(rng, DISTS.SITE_PAGE_TO_BACKER);
-  const dailyExpected = dailyVisitors * ctr * p2b;
-  const out = new Float64Array(duration);
-  for (let i = 0; i < duration; i++) {
-    out[i] = poissonSample(rng, Math.max(0, dailyExpected * duration * weights[i]));
-  }
-  return out;
-}
 
 function iggOrganicTraffic(rng, duration, weights) {
   const dailyVisitors = sampleDist(rng, DISTS.IGG_DAILY_VISITORS);
@@ -564,7 +539,7 @@ function calculateRevenue(dailyBackers, ebPrice, ebQty, stdPrice, duration) {
 // -- Main simulation --
 function runSimulation(params) {
   const { emailList, igFollowers, fbFollowers, dailyAdBudget, prHits,
-          monthlyVisitors, goal, duration, ebPrice, ebQty } = params;
+          goal, duration, ebPrice, ebQty } = params;
   const stdPrice = 200.00;
   const weights = ucurveWeights(duration);
 
@@ -583,11 +558,10 @@ function runSimulation(params) {
     const soc = socialTraffic(rng, igFollowers, fbFollowers, duration, weights);
     const ads = paidAdsTraffic(rng, dailyAdBudget, duration, weights);
     const prT = prTraffic(rng, prHits, duration, weights);
-    const web = websiteTraffic(rng, monthlyVisitors, duration, weights);
     const org = iggOrganicTraffic(rng, duration, weights);
 
     for (let i = 0; i < duration; i++) {
-      backers[i] = em[i] + soc[i] + ads[i] + prT[i] + web[i] + org[i];
+      backers[i] = em[i] + soc[i] + ads[i] + prT[i] + org[i];
     }
 
     // Cumulative for WOM
@@ -664,7 +638,6 @@ function updateDisplay() {
     fbFollowers:    +$('fb').value,
     dailyAdBudget:  +$('adBudget').value,
     prHits:         +$('pr').value,
-    monthlyVisitors:+$('site').value,
     goal:           +$('goal').value,
     duration:       +$('duration').value,
     ebPrice:        +$('ebPrice').value,
@@ -677,7 +650,7 @@ function updateDisplay() {
   $('fbVal').textContent = params.fbFollowers.toLocaleString();
   $('adBudgetVal').textContent = '$' + params.dailyAdBudget;
   $('prVal').textContent = params.prHits;
-  $('siteVal').textContent = params.monthlyVisitors.toLocaleString();
+
   $('goalVal').textContent = '$' + params.goal.toLocaleString();
   $('durationVal').textContent = params.duration;
   $('ebPriceVal').textContent = '$' + params.ebPrice;
@@ -849,7 +822,7 @@ function updateDisplay() {
 }
 
 // Wire up all sliders
-const sliderIds = ['email','ig','fb','adBudget','pr','site','goal','duration','ebPrice','ebQty'];
+const sliderIds = ['email','ig','fb','adBudget','pr','goal','duration','ebPrice','ebQty'];
 sliderIds.forEach(id => {
   $(id).addEventListener('input', () => {
     // Quick label update while dragging
@@ -876,7 +849,7 @@ $('totalBudget').addEventListener('input', () => {
 function quickProb(params, nRuns) {
   // Lighter simulation for optimizer -- only need P(funded)
   const { emailList, igFollowers, fbFollowers, dailyAdBudget, prHits,
-          monthlyVisitors, goal, duration, ebPrice, ebQty } = params;
+          goal, duration, ebPrice, ebQty } = params;
   const stdPrice = 200.00;
   const weights = ucurveWeights(duration);
   let funded = 0;
@@ -888,11 +861,10 @@ function quickProb(params, nRuns) {
     const soc = socialTraffic(rng, igFollowers, fbFollowers, duration, weights);
     const ads = paidAdsTraffic(rng, dailyAdBudget, duration, weights);
     const prT = prTraffic(rng, prHits, duration, weights);
-    const web = websiteTraffic(rng, monthlyVisitors, duration, weights);
     const org = iggOrganicTraffic(rng, duration, weights);
 
     for (let i = 0; i < duration; i++)
-      backers[i] = em[i] + soc[i] + ads[i] + prT[i] + web[i] + org[i];
+      backers[i] = em[i] + soc[i] + ads[i] + prT[i] + org[i];
 
     const cum = new Float64Array(duration);
     cum[0] = backers[0];
@@ -923,7 +895,6 @@ async function runOptimizer() {
     ig:     +$('costIg').value,
     fb:     +$('costFb').value,
     pr:     +$('costPr').value,
-    site:   +$('costSite').value,
   };
 
   // Base params from current slider positions
@@ -933,7 +904,6 @@ async function runOptimizer() {
     fbFollowers:    +$('fb').value,
     dailyAdBudget:  +$('adBudget').value,
     prHits:         +$('pr').value,
-    monthlyVisitors:+$('site').value,
     goal:           +$('goal').value,
     duration:       +$('duration').value,
     ebPrice:        +$('ebPrice').value,
@@ -947,7 +917,6 @@ async function runOptimizer() {
     { key: 'fbFollowers',     name: 'FB followers',  costPer: costs.fb,          unit: 'followers' },
     { key: 'dailyAdBudget',   name: 'Ad budget',     costPer: 30,               unit: '$/day' }, // $1/day x 30d
     { key: 'prHits',          name: 'PR / media',    costPer: costs.pr,          unit: 'hits' },
-    { key: 'monthlyVisitors', name: 'Site visitors',  costPer: costs.site / 100, unit: 'visitors/mo' },
   ];
 
   // Max units each channel can absorb
@@ -1116,7 +1085,6 @@ function applyOptimal(params) {
   $('fb').value = params.fbFollowers;
   $('adBudget').value = params.dailyAdBudget;
   $('pr').value = params.prHits;
-  $('site').value = params.monthlyVisitors;
   updateDisplay();
 }
 

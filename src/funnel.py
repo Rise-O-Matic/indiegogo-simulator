@@ -85,17 +85,6 @@ def pr_traffic(num_hits, duration_days, weights, rng):
     return rng.poisson(np.maximum(expected_daily, 0))
 
 
-def website_traffic(monthly_visitors, duration_days, weights, rng):
-    if monthly_visitors <= 0:
-        return np.zeros(duration_days)
-    multiplier = _sample(D.SITE_CAMPAIGN_MULTIPLIER, rng)
-    campaign_daily_visitors = (monthly_visitors / 30.0) * multiplier
-    ctr = _sample(D.SITE_TO_IGG_CTR, rng)
-    page_to_backer = _sample(D.SITE_PAGE_TO_BACKER, rng)
-    daily_expected = campaign_daily_visitors * ctr * page_to_backer
-    expected_daily = daily_expected * duration_days * weights
-    return rng.poisson(np.maximum(expected_daily, 0))
-
 
 def igg_organic_traffic(duration_days, weights, rng, trending_boost=1.0):
     daily_visitors = _sample(D.IGG_DAILY_CATEGORY_VISITORS, rng) * trending_boost
@@ -123,13 +112,12 @@ def word_of_mouth_traffic(cumulative_backers, duration_days, rng):
 
 
 def total_daily_backers(email_list, ig_followers, fb_followers, daily_ad_budget,
-                        pr_hits, monthly_site_visitors, duration_days, weights, rng):
+                        pr_hits, duration_days, weights, rng):
     backers = np.zeros(duration_days)
     backers += email_traffic(email_list, duration_days, weights, rng)
     backers += social_traffic(ig_followers, fb_followers, duration_days, weights, rng)
     backers += paid_ads_traffic(daily_ad_budget, duration_days, weights, rng)
     backers += pr_traffic(pr_hits, duration_days, weights, rng)
-    backers += website_traffic(monthly_site_visitors, duration_days, weights, rng)
     backers += igg_organic_traffic(duration_days, weights, rng)
     cumulative = np.cumsum(backers)
     backers += word_of_mouth_traffic(cumulative, duration_days, rng)

@@ -12,7 +12,7 @@ from src import distributions as D
 
 
 def test_param_count():
-    assert NDIM == 23
+    assert NDIM == 20
 
 
 def test_pack_unpack_roundtrip():

@@ -16,7 +16,6 @@ class SimulationInputs:
     fb_followers: int = 0
     daily_ad_budget: float = 0.0
     pr_hits: int = 0
-    monthly_site_visitors: int = 0
     cloak: CloakConfig = field(default_factory=CloakConfig)
     campaign: CampaignConfig = field(default_factory=CampaignConfig)
     fees: FeeStructure = field(default_factory=FeeStructure)
@@ -60,7 +59,6 @@ def run_simulation(inputs: SimulationInputs, n_runs: int = 10_000, seed: int = 4
             fb_followers=inputs.fb_followers,
             daily_ad_budget=inputs.daily_ad_budget,
             pr_hits=inputs.pr_hits,
-            monthly_site_visitors=inputs.monthly_site_visitors,
             duration_days=duration,
             weights=weights,
             rng=rng,

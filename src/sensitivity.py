@@ -11,7 +11,6 @@ SENSITIVITY_RANGES = {
     "fb_followers": (0, 2000),
     "daily_ad_budget": (0.0, 500.0),
     "pr_hits": (0, 5),
-    "monthly_site_visitors": (0, 5000),
 }
 
 

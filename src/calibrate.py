@@ -83,15 +83,12 @@ PARAM_REGISTRY = [
     ParamSpec("AD_PAGE_TO_BACKER", "AD_PAGE_TO_BACKER", "logit"),
     ParamSpec("PR_CTR", "PR_CTR", "logit"),
     ParamSpec("PR_PAGE_TO_BACKER", "PR_PAGE_TO_BACKER", "logit"),
-    ParamSpec("SITE_TO_IGG_CTR", "SITE_TO_IGG_CTR", "logit"),
-    ParamSpec("SITE_PAGE_TO_BACKER", "SITE_PAGE_TO_BACKER", "logit"),
     ParamSpec("IGG_PAGE_TO_BACKER", "IGG_PAGE_TO_BACKER", "logit"),
     ParamSpec("WOM_VISIT_RATE", "WOM_VISIT_RATE", "logit"),
     ParamSpec("WOM_PAGE_TO_BACKER", "WOM_PAGE_TO_BACKER", "logit"),
     # LogNormal scales (5)
     ParamSpec("AD_CPM", "AD_CPM", "log"),
     ParamSpec("PR_REACH_PER_HIT", "PR_REACH_PER_HIT", "log"),
-    ParamSpec("SITE_CAMPAIGN_MULTIPLIER", "SITE_CAMPAIGN_MULTIPLIER", "log"),
     ParamSpec("IGG_DAILY_CATEGORY_VISITORS", "IGG_DAILY_CATEGORY_VISITORS", "log"),
     ParamSpec("WOM_TELLS", "WOM_TELLS", "log"),
 ]
@@ -208,15 +205,15 @@ def extract_targets(ks_csv_path: str = None) -> dict:
 INPUT_PRESETS = {
     "small": SimulationInputs(
         email_list=200, ig_followers=50, fb_followers=30,
-        daily_ad_budget=0.0, pr_hits=0, monthly_site_visitors=100,
+        daily_ad_budget=0.0, pr_hits=0,
     ),
     "medium": SimulationInputs(
         email_list=1000, ig_followers=500, fb_followers=200,
-        daily_ad_budget=15.0, pr_hits=3, monthly_site_visitors=500,
+        daily_ad_budget=15.0, pr_hits=3,
     ),
     "cloak": SimulationInputs(
         email_list=50, ig_followers=124, fb_followers=69,
-        daily_ad_budget=10.0, pr_hits=2, monthly_site_visitors=300,
+        daily_ad_budget=10.0, pr_hits=2,
     ),
 }
 

@@ -54,10 +54,6 @@ PR_REACH_PER_HIT = DistParam(stats.lognorm(s=1.0000, scale=3117.3371), tier=3, s
 PR_CTR = DistParam(stats.beta(a=0.3598, b=99.6402), tier=3, source="~1% CTR from press articles")
 PR_PAGE_TO_BACKER = DistParam(stats.beta(a=3.4365, b=96.5635), tier=3, source="~3% press visitor backs (warm, came from article)")
 
-# --- Website traffic ---
-SITE_CAMPAIGN_MULTIPLIER = DistParam(stats.lognorm(s=0.3000, scale=4.8184), tier=3, source="~2x traffic during active campaign")
-SITE_TO_IGG_CTR = DistParam(stats.beta(a=11.8951, b=88.1049), tier=3, source="~8% site-to-campaign click-through (banner/popup)")
-SITE_PAGE_TO_BACKER = DistParam(stats.beta(a=19.7776, b=80.2224), tier=3, source="~5% warm visitor backs (already knows product)")
 
 # --- IGG organic ---
 # Kickstarter drives ~200-500 organic visitors/day for comparable campaigns.

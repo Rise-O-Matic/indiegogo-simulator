@@ -10,7 +10,6 @@ CHANNEL_CONFIGS = {
     "fb_followers": {"range": (0, 50_000), "difficulty": "Hard", "type": int},
     "daily_ad_budget": {"range": (0, 5_000), "difficulty": "Medium ($$)", "type": float},
     "pr_hits": {"range": (0, 20), "difficulty": "Hard", "type": int},
-    "monthly_site_visitors": {"range": (0, 50_000), "difficulty": "Medium", "type": int},
 }
 
 
