@@ -10,7 +10,7 @@ sns.set_theme(style="whitegrid", palette="deep")
 
 def campaign_scorecard(prob_funding, raised_percentiles, backer_percentiles, median_net_revenue, demand_rating, goal):
     lines = [
-        "=" * 56, f"  CLOAK Campaign Simulation — Results", "=" * 56,
+        "=" * 56, f"  CLOAK Campaign Simulation -- Results", "=" * 56,
         f"  Probability of funding:    {prob_funding:>6.1%}",
         f"  Funding goal:              ${goal:>10,.0f}",
         "-" * 56,
@@ -42,7 +42,7 @@ def funding_trajectory_fan_chart(trajectories, goal, duration_days):
     ax.axhline(y=goal, color="red", linestyle="--", linewidth=1.5, label=f"Goal: ${goal:,.0f}")
     ax.set_xlabel("Campaign Day")
     ax.set_ylabel("Cumulative Funds Raised ($)")
-    ax.set_title("Funding Trajectory — Monte Carlo Fan Chart")
+    ax.set_title("Funding Trajectory -- Monte Carlo Fan Chart")
     ax.yaxis.set_major_formatter(mticker.FuncFormatter(lambda x, _: f"${x:,.0f}"))
     ax.legend(loc="upper left")
     plt.tight_layout()
@@ -84,7 +84,7 @@ def tornado_chart(tornado_data, baseline_revenue):
     ax.set_yticklabels([c.replace("_", " ").title() for c in channels])
     ax.axvline(x=baseline_revenue, color="black", linewidth=1)
     ax.set_xlabel("Median Gross Revenue ($)")
-    ax.set_title("Sensitivity Analysis — Which Levers Matter Most")
+    ax.set_title("Sensitivity Analysis -- Which Levers Matter Most")
     ax.xaxis.set_major_formatter(mticker.FuncFormatter(lambda x, _: f"${x:,.0f}"))
     ax.legend()
     plt.tight_layout()
