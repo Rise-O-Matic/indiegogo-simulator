@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 @dataclass
 class CloakConfig:
     """CLOAK product constants."""
-    standard_price: float = 179.99
+    standard_price: float = 200.00
     early_bird_price: float = 149.99
     early_bird_quantity: int = 50
     cogs_per_unit: float = 45.0

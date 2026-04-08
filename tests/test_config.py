@@ -3,7 +3,7 @@ from src.config import CloakConfig, CampaignConfig, FeeStructure
 
 def test_cloak_defaults():
     c = CloakConfig()
-    assert c.standard_price == 179.99
+    assert c.standard_price == 200.00
     assert c.early_bird_price == 149.99
     assert c.early_bird_quantity == 50
 

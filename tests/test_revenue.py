@@ -24,7 +24,7 @@ def test_mixed_early_bird_and_standard():
         fees=FeeStructure(),
     )
     assert result["total_backers"] == 20
-    expected_gross = 10 * 149.99 + 10 * 179.99
+    expected_gross = 10 * 149.99 + 10 * 200.00
     assert abs(result["gross_revenue"] - expected_gross) < 0.01
 
 
