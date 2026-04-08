@@ -7,3 +7,4 @@ plotly>=5.18
 requests>=2.31
 jupyter>=1.0
 ipykernel>=6.25
+pytest>=7.4
