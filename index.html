@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CLOAK Campaign Simulator</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0f0f1a;
+    --card: #1a1a2e;
+    --border: #2a2a3e;
+    --text: #e0e0e0;
+    --muted: #888;
+    --accent: #4a9eff;
+    --green: #27ae60;
+    --yellow: #f39c12;
+    --red: #e74c3c;
+    --blue: #2980b9;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg); color: var(--text);
+    padding: 12px; max-width: 900px; margin: 0 auto;
+    -webkit-text-size-adjust: 100%;
+  }
+  h1 { font-size: 1.3rem; text-align: center; margin-bottom: 4px; }
+  .subtitle { text-align: center; color: var(--muted); font-size: 0.8rem; margin-bottom: 16px; }
+
+  /* Scorecard */
+  .scorecard {
+    background: var(--card); border-radius: 12px; padding: 16px;
+    margin-bottom: 12px; text-align: center; border: 1px solid var(--border);
+  }
+  .prob-big { font-size: 3rem; font-weight: 800; line-height: 1.1; }
+  .prob-label { font-size: 0.9rem; margin-bottom: 8px; }
+  .stats-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+    text-align: left; font-size: 0.82rem; margin-top: 10px;
+  }
+  .stat-box {
+    background: var(--bg); border-radius: 8px; padding: 8px 10px;
+  }
+  .stat-label { color: var(--muted); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px; }
+  .stat-value { font-size: 1.05rem; font-weight: 600; margin-top: 2px; }
+
+  /* Sliders */
+  .controls {
+    background: var(--card); border-radius: 12px; padding: 14px;
+    margin-bottom: 12px; border: 1px solid var(--border);
+  }
+  .section-title {
+    font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px;
+    color: var(--muted); margin-bottom: 8px; font-weight: 600;
+  }
+  .slider-row {
+    display: flex; align-items: center; margin-bottom: 10px;
+    gap: 8px;
+  }
+  .slider-row label {
+    flex: 0 0 120px; font-size: 0.82rem; color: var(--text);
+  }
+  .slider-row input[type=range] {
+    flex: 1; height: 6px; -webkit-appearance: none; appearance: none;
+    background: var(--border); border-radius: 3px; outline: none;
+  }
+  .slider-row input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 22px; height: 22px;
+    border-radius: 50%; background: var(--accent); cursor: pointer;
+  }
+  .slider-row input[type=range]::-moz-range-thumb {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--accent); cursor: pointer; border: none;
+  }
+  .slider-val {
+    flex: 0 0 70px; text-align: right; font-size: 0.85rem;
+    font-weight: 600; font-variant-numeric: tabular-nums;
+  }
+
+  /* Charts */
+  .chart-wrap {
+    background: var(--card); border-radius: 12px; padding: 12px;
+    margin-bottom: 12px; border: 1px solid var(--border);
+  }
+  .chart-wrap canvas { width: 100% !important; }
+
+  .timing { text-align: center; color: var(--muted); font-size: 0.7rem; margin-top: 4px; }
+
+  /* Go/no-go bar */
+  .verdict-bar {
+    border-radius: 8px; padding: 10px 14px; margin-bottom: 12px;
+    font-size: 0.85rem; font-weight: 600; text-align: center;
+  }
+
+  @media (min-width: 640px) {
+    body { padding: 24px; }
+    .prob-big { font-size: 4rem; }
+    .stats-grid { grid-template-columns: 1fr 1fr 1fr 1fr; }
+    .slider-row label { flex: 0 0 150px; }
+  }
+</style>
+</head>
+<body>
+
+<h1>CLOAK Campaign Simulator</h1>
+<p class="subtitle">Monte Carlo crowdfunding projection -- drag sliders to explore</p>
+
+<div class="scorecard">
+  <div class="prob-big" id="probBig">--</div>
+  <div class="prob-label" id="probLabel">probability of funding</div>
+  <div class="stats-grid">
+    <div class="stat-box"><div class="stat-label">Raised (median)</div><div class="stat-value" id="statRaised">--</div></div>
+    <div class="stat-box"><div class="stat-label">Backers (median)</div><div class="stat-value" id="statBackers">--</div></div>
+    <div class="stat-box"><div class="stat-label">Net Revenue</div><div class="stat-value" id="statNet">--</div></div>
+    <div class="stat-box"><div class="stat-label">Goal</div><div class="stat-value" id="statGoal">--</div></div>
+  </div>
+</div>
+
+<div class="verdict-bar" id="verdictBar"></div>
+
+<div class="controls">
+  <div class="section-title">Audience</div>
+  <div class="slider-row">
+    <label>Email list</label>
+    <input type="range" id="email" min="0" max="10000" step="50" value="50">
+    <span class="slider-val" id="emailVal">50</span>
+  </div>
+  <div class="slider-row">
+    <label>IG followers</label>
+    <input type="range" id="ig" min="0" max="10000" step="50" value="124">
+    <span class="slider-val" id="igVal">124</span>
+  </div>
+  <div class="slider-row">
+    <label>FB followers</label>
+    <input type="range" id="fb" min="0" max="10000" step="50" value="69">
+    <span class="slider-val" id="fbVal">69</span>
+  </div>
+  <div class="slider-row">
+    <label>Ad budget ($/day)</label>
+    <input type="range" id="adBudget" min="0" max="500" step="5" value="0">
+    <span class="slider-val" id="adBudgetVal">$0</span>
+  </div>
+  <div class="slider-row">
+    <label>PR / media hits</label>
+    <input type="range" id="pr" min="0" max="10" step="1" value="0">
+    <span class="slider-val" id="prVal">0</span>
+  </div>
+  <div class="slider-row">
+    <label>Monthly visitors</label>
+    <input type="range" id="site" min="0" max="10000" step="50" value="100">
+    <span class="slider-val" id="siteVal">100</span>
+  </div>
+</div>
+
+<div class="controls">
+  <div class="section-title">Campaign</div>
+  <div class="slider-row">
+    <label>Funding goal ($)</label>
+    <input type="range" id="goal" min="5000" max="100000" step="1000" value="15000">
+    <span class="slider-val" id="goalVal">$15,000</span>
+  </div>
+  <div class="slider-row">
+    <label>Duration (days)</label>
+    <input type="range" id="duration" min="15" max="60" step="1" value="30">
+    <span class="slider-val" id="durationVal">30</span>
+  </div>
+  <div class="slider-row">
+    <label>Early bird price ($)</label>
+    <input type="range" id="ebPrice" min="99" max="179" step="5" value="149">
+    <span class="slider-val" id="ebPriceVal">$149</span>
+  </div>
+  <div class="slider-row">
+    <label>Early bird qty</label>
+    <input type="range" id="ebQty" min="0" max="500" step="10" value="50">
+    <span class="slider-val" id="ebQtyVal">50</span>
+  </div>
+</div>
+
+<div class="chart-wrap">
+  <canvas id="fanChart" height="220"></canvas>
+</div>
+<div class="chart-wrap">
+  <canvas id="histChart" height="160"></canvas>
+</div>
+<div class="timing" id="timing"></div>
+
+<script>
+// =====================================================
+// CLOAK Campaign Simulator -- JavaScript Monte Carlo
+// Port of Python engine (src/) for static deployment
+// =====================================================
+
+const N_RUNS = 1000;
+
+// -- Random number generator (xoshiro128**) --
+// Seedable PRNG for reproducible results
+function makeRng(seed) {
+  let s = [seed, seed ^ 0x6D2B79F5, seed ^ 0x1B56C4E9, seed ^ 0x9E3779B9];
+  function rotl(x, k) { return ((x << k) | (x >>> (32 - k))) >>> 0; }
+  function next() {
+    const r = (rotl((s[1] * 5) >>> 0, 7) * 9) >>> 0;
+    const t = (s[1] << 9) >>> 0;
+    s[2] ^= s[0]; s[3] ^= s[1]; s[1] ^= s[2]; s[0] ^= s[3];
+    s[2] ^= t; s[3] = rotl(s[3], 11);
+    return r / 4294967296;
+  }
+  return { uniform: next };
+}
+
+// -- Distribution samplers --
+
+function normalSample(rng) {
+  // Box-Muller transform
+  const u1 = rng.uniform();
+  const u2 = rng.uniform();
+  return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+}
+
+function gammaSample(rng, shape) {
+  // Marsaglia and Tsang's method for shape >= 1
+  // For shape < 1, use shape+1 then adjust
+  if (shape < 1) {
+    const u = rng.uniform();
+    return gammaSample(rng, shape + 1) * Math.pow(u, 1 / shape);
+  }
+  const d = shape - 1/3;
+  const c = 1 / Math.sqrt(9 * d);
+  while (true) {
+    let x, v;
+    do {
+      x = normalSample(rng);
+      v = 1 + c * x;
+    } while (v <= 0);
+    v = v * v * v;
+    const u = rng.uniform();
+    if (u < 1 - 0.0331 * (x * x) * (x * x)) return d * v;
+    if (Math.log(u) < 0.5 * x * x + d * (1 - v + Math.log(v))) return d * v;
+  }
+}
+
+function betaSample(rng, a, b) {
+  const x = gammaSample(rng, a);
+  const y = gammaSample(rng, b);
+  return x / (x + y);
+}
+
+function lognormalSample(rng, s, scale) {
+  const z = normalSample(rng);
+  return scale * Math.exp(s * z);
+}
+
+function poissonSample(rng, lambda) {
+  if (lambda <= 0) return 0;
+  if (lambda > 30) {
+    // Normal approximation for large lambda
+    return Math.max(0, Math.round(lambda + Math.sqrt(lambda) * normalSample(rng)));
+  }
+  const L = Math.exp(-lambda);
+  let k = 0, p = 1;
+  do { k++; p *= rng.uniform(); } while (p > L);
+  return k - 1;
+}
+
+// -- Distribution definitions (matching distributions.py) --
+const DISTS = {
+  EMAIL_OPEN_RATE:       { type: 'beta', a: 20, b: 80 },
+  EMAIL_CTR:             { type: 'beta', a: 3, b: 97 },
+  EMAIL_PAGE_TO_BACKER:  { type: 'beta', a: 3, b: 47 },
+  IG_REACH_RATE:         { type: 'beta', a: 5, b: 95 },
+  IG_CTR:                { type: 'beta', a: 2, b: 98 },
+  IG_PAGE_TO_BACKER:     { type: 'beta', a: 3, b: 97 },
+  FB_REACH_RATE:         { type: 'beta', a: 3, b: 97 },
+  FB_CTR:                { type: 'beta', a: 1, b: 99 },
+  FB_PAGE_TO_BACKER:     { type: 'beta', a: 3, b: 97 },
+  AD_CPM:                { type: 'lognormal', s: 0.4, scale: 12.0 },
+  AD_CTR:                { type: 'beta', a: 1.5, b: 98.5 },
+  AD_PAGE_TO_BACKER:     { type: 'beta', a: 1, b: 99 },
+  PR_REACH_PER_HIT:      { type: 'lognormal', s: 1.0, scale: 5000 },
+  PR_CTR:                { type: 'beta', a: 0.5, b: 99.5 },
+  PR_PAGE_TO_BACKER:     { type: 'beta', a: 2, b: 98 },
+  SITE_CAMPAIGN_MULT:    { type: 'lognormal', s: 0.3, scale: 1.5 },
+  SITE_TO_IGG_CTR:       { type: 'beta', a: 5, b: 95 },
+  SITE_PAGE_TO_BACKER:   { type: 'beta', a: 3, b: 97 },
+  IGG_DAILY_VISITORS:    { type: 'lognormal', s: 0.5, scale: 50 },
+  IGG_PAGE_TO_BACKER:    { type: 'beta', a: 2, b: 98 },
+  WOM_TELLS:             { type: 'lognormal', s: 0.5, scale: 2.0 },
+  WOM_VISIT_RATE:        { type: 'beta', a: 10, b: 90 },
+  WOM_PAGE_TO_BACKER:    { type: 'beta', a: 3, b: 97 },
+};
+
+function sampleDist(rng, d) {
+  if (d.type === 'beta') return betaSample(rng, d.a, d.b);
+  if (d.type === 'lognormal') return lognormalSample(rng, d.s, d.scale);
+  return 0;
+}
+
+// -- U-curve weights (matching ucurve.py) --
+function ucurveWeights(duration) {
+  const w = new Float64Array(duration);
+  let sum = 0;
+  for (let i = 0; i < duration; i++) {
+    const launch = Math.exp(-i / 2.5);
+    const deadline = Math.exp(-(duration - 1 - i) / 2.5);
+    w[i] = launch + deadline + 0.02;
+    sum += w[i];
+  }
+  for (let i = 0; i < duration; i++) w[i] /= sum;
+  return w;
+}
+
+// -- Traffic source models (matching funnel.py) --
+
+function emailTraffic(rng, listSize, duration, weights) {
+  if (listSize === 0) return new Float64Array(duration);
+  const openRate = sampleDist(rng, DISTS.EMAIL_OPEN_RATE);
+  const ctr = sampleDist(rng, DISTS.EMAIL_CTR);
+  const p2b = sampleDist(rng, DISTS.EMAIL_PAGE_TO_BACKER);
+  const totalPageViews = listSize * openRate * ctr * 5; // 5 emails per campaign
+  const totalBackers = totalPageViews * p2b;
+  const ew = new Float64Array(duration);
+  let esum = 0;
+  for (let i = 0; i < duration; i++) {
+    ew[i] = weights[i];
+    if (i === 0) ew[i] *= 5;
+    if (i === 1) ew[i] *= 3;
+    esum += ew[i];
+  }
+  const out = new Float64Array(duration);
+  for (let i = 0; i < duration; i++) {
+    out[i] = poissonSample(rng, Math.max(0, totalBackers * ew[i] / esum));
+  }
+  return out;
+}
+
+function socialTraffic(rng, igFollowers, fbFollowers, duration, weights) {
+  let totalBackers = 0;
+  if (igFollowers > 0) {
+    const reach = igFollowers * sampleDist(rng, DISTS.IG_REACH_RATE);
+    const clicks = reach * sampleDist(rng, DISTS.IG_CTR);
+    totalBackers += clicks * sampleDist(rng, DISTS.IG_PAGE_TO_BACKER) * 6;
+  }
+  if (fbFollowers > 0) {
+    const reach = fbFollowers * sampleDist(rng, DISTS.FB_REACH_RATE);
+    const clicks = reach * sampleDist(rng, DISTS.FB_CTR);
+    totalBackers += clicks * sampleDist(rng, DISTS.FB_PAGE_TO_BACKER) * 6;
+  }
+  if (totalBackers === 0) return new Float64Array(duration);
+  const out = new Float64Array(duration);
+  for (let i = 0; i < duration; i++) {
+    out[i] = poissonSample(rng, Math.max(0, totalBackers * weights[i]));
+  }
+  return out;
+}
+
+function paidAdsTraffic(rng, dailyBudget, duration, weights) {
+  if (dailyBudget <= 0) return new Float64Array(duration);
+  const cpm = sampleDist(rng, DISTS.AD_CPM);
+  const ctr = sampleDist(rng, DISTS.AD_CTR);
+  const p2b = sampleDist(rng, DISTS.AD_PAGE_TO_BACKER);
+  const dailyImpressions = (dailyBudget / cpm) * 1000;
+  const dailyClicks = dailyImpressions * ctr;
+  const dailyExpected = dailyClicks * p2b;
+  const out = new Float64Array(duration);
+  for (let i = 0; i < duration; i++) {
+    const w = 0.5 / duration + 0.5 * weights[i];
+    out[i] = poissonSample(rng, Math.max(0, dailyExpected * duration * w));
+  }
+  return out;
+}
+
+function prTraffic(rng, numHits, duration, weights) {
+  if (numHits <= 0) return new Float64Array(duration);
+  let totalBackers = 0;
+  for (let h = 0; h < numHits; h++) {
+    const reach = sampleDist(rng, DISTS.PR_REACH_PER_HIT);
+    const clicks = reach * sampleDist(rng, DISTS.PR_CTR);
+    totalBackers += clicks * sampleDist(rng, DISTS.PR_PAGE_TO_BACKER);
+  }
+  const pw = new Float64Array(duration);
+  let psum = 0;
+  for (let i = 0; i < duration; i++) {
+    pw[i] = weights[i] * (i < 7 ? 3 : 1);
+    psum += pw[i];
+  }
+  const out = new Float64Array(duration);
+  for (let i = 0; i < duration; i++) {
+    out[i] = poissonSample(rng, Math.max(0, totalBackers * pw[i] / psum));
+  }
+  return out;
+}
+
+function websiteTraffic(rng, monthlyVisitors, duration, weights) {
+  if (monthlyVisitors <= 0) return new Float64Array(duration);
+  const mult = sampleDist(rng, DISTS.SITE_CAMPAIGN_MULT);
+  const dailyVisitors = (monthlyVisitors / 30) * mult;
+  const ctr = sampleDist(rng, DISTS.SITE_TO_IGG_CTR);
+  const p2b = sampleDist(rng, DISTS.SITE_PAGE_TO_BACKER);
+  const dailyExpected = dailyVisitors * ctr * p2b;
+  const out = new Float64Array(duration);
+  for (let i = 0; i < duration; i++) {
+    out[i] = poissonSample(rng, Math.max(0, dailyExpected * duration * weights[i]));
+  }
+  return out;
+}
+
+function iggOrganicTraffic(rng, duration, weights) {
+  const dailyVisitors = sampleDist(rng, DISTS.IGG_DAILY_VISITORS);
+  const p2b = sampleDist(rng, DISTS.IGG_PAGE_TO_BACKER);
+  const dailyExpected = dailyVisitors * p2b;
+  const out = new Float64Array(duration);
+  for (let i = 0; i < duration; i++) {
+    const w = 0.7 / duration + 0.3 * weights[i];
+    out[i] = poissonSample(rng, Math.max(0, dailyExpected * duration * w));
+  }
+  return out;
+}
+
+function womTraffic(rng, cumulativeBackers, duration) {
+  const tells = sampleDist(rng, DISTS.WOM_TELLS);
+  const visitRate = sampleDist(rng, DISTS.WOM_VISIT_RATE);
+  const p2b = sampleDist(rng, DISTS.WOM_PAGE_TO_BACKER);
+  const out = new Float64Array(duration);
+  for (let day = 1; day < duration; day++) {
+    const newPrev = cumulativeBackers[day] - (day > 0 ? cumulativeBackers[day - 1] : 0);
+    const refs = newPrev * tells * visitRate * p2b;
+    out[day] = poissonSample(rng, Math.max(0, refs));
+  }
+  return out;
+}
+
+// -- Revenue calculation (matching revenue.py) --
+function calculateRevenue(dailyBackers, ebPrice, ebQty, stdPrice, duration) {
+  let totalBackers = 0;
+  for (let i = 0; i < duration; i++) totalBackers += dailyBackers[i];
+  if (totalBackers === 0) return { gross: 0, net: 0, backers: 0, dailyCum: new Float64Array(duration) };
+
+  const ebBackers = Math.min(totalBackers, ebQty);
+  const stdBackers = totalBackers - ebBackers;
+  const gross = ebBackers * ebPrice + stdBackers * stdPrice;
+
+  // Fees: 5% platform + 3% processing + $0.20/txn
+  const fees = gross * 0.05 + gross * 0.03 + totalBackers * 0.20;
+  const cogs = totalBackers * 45;
+  const shipping = totalBackers * 12;
+  const net = gross - fees - cogs - shipping;
+
+  // Daily cumulative revenue
+  const dailyCum = new Float64Array(duration);
+  let cumBackers = 0;
+  let cumRev = 0;
+  for (let i = 0; i < duration; i++) {
+    const db = dailyBackers[i];
+    if (db > 0) {
+      const cumBefore = cumBackers;
+      cumBackers += db;
+      const ebInDay = Math.min(db, Math.max(0, Math.min(cumBackers, ebQty) - Math.max(cumBefore, 0)));
+      const stdInDay = db - ebInDay;
+      cumRev += ebInDay * ebPrice + stdInDay * stdPrice;
+    }
+    dailyCum[i] = cumRev;
+  }
+
+  return { gross, net, backers: totalBackers, dailyCum };
+}
+
+// -- Main simulation --
+function runSimulation(params) {
+  const { emailList, igFollowers, fbFollowers, dailyAdBudget, prHits,
+          monthlyVisitors, goal, duration, ebPrice, ebQty } = params;
+  const stdPrice = 179.99;
+  const weights = ucurveWeights(duration);
+
+  const allRaised = new Float64Array(N_RUNS);
+  const allBackers = new Float64Array(N_RUNS);
+  const allNet = new Float64Array(N_RUNS);
+  const allFunded = new Uint8Array(N_RUNS);
+  const allTrajectories = [];
+
+  for (let run = 0; run < N_RUNS; run++) {
+    const rng = makeRng(42 + run);
+
+    // Combine traffic sources
+    const backers = new Float64Array(duration);
+    const em = emailTraffic(rng, emailList, duration, weights);
+    const soc = socialTraffic(rng, igFollowers, fbFollowers, duration, weights);
+    const ads = paidAdsTraffic(rng, dailyAdBudget, duration, weights);
+    const prT = prTraffic(rng, prHits, duration, weights);
+    const web = websiteTraffic(rng, monthlyVisitors, duration, weights);
+    const org = iggOrganicTraffic(rng, duration, weights);
+
+    for (let i = 0; i < duration; i++) {
+      backers[i] = em[i] + soc[i] + ads[i] + prT[i] + web[i] + org[i];
+    }
+
+    // Cumulative for WOM
+    const cum = new Float64Array(duration);
+    cum[0] = backers[0];
+    for (let i = 1; i < duration; i++) cum[i] = cum[i-1] + backers[i];
+
+    const wom = womTraffic(rng, cum, duration);
+    for (let i = 0; i < duration; i++) backers[i] += wom[i];
+
+    // Revenue
+    const rev = calculateRevenue(backers, ebPrice, ebQty, stdPrice, duration);
+    allRaised[run] = rev.gross;
+    allBackers[run] = rev.backers;
+    allNet[run] = rev.net;
+    allFunded[run] = rev.gross >= goal ? 1 : 0;
+    allTrajectories.push(rev.dailyCum);
+  }
+
+  // Compute percentiles
+  const sortedRaised = Float64Array.from(allRaised).sort();
+  const sortedBackers = Float64Array.from(allBackers).sort();
+  const sortedNet = Float64Array.from(allNet).sort();
+
+  const pctl = (arr, p) => arr[Math.min(Math.floor(p / 100 * arr.length), arr.length - 1)];
+  let funded = 0;
+  for (let i = 0; i < N_RUNS; i++) funded += allFunded[i];
+
+  // Trajectory percentiles
+  const trajPctls = {};
+  for (const p of [10, 25, 50, 75, 90]) {
+    trajPctls[p] = new Float64Array(duration);
+    for (let d = 0; d < duration; d++) {
+      const col = new Float64Array(N_RUNS);
+      for (let r = 0; r < N_RUNS; r++) col[r] = allTrajectories[r][d];
+      col.sort();
+      trajPctls[p][d] = pctl(col, p);
+    }
+  }
+
+  return {
+    prob: funded / N_RUNS,
+    raised: { p10: pctl(sortedRaised, 10), p50: pctl(sortedRaised, 50), p90: pctl(sortedRaised, 90) },
+    backers: { p10: pctl(sortedBackers, 10), p50: pctl(sortedBackers, 50), p90: pctl(sortedBackers, 90) },
+    netMedian: pctl(sortedNet, 50),
+    trajPctls,
+    allRaised: sortedRaised,
+    duration,
+    goal,
+  };
+}
+
+// =====================================================
+// UI
+// =====================================================
+
+const $ = id => document.getElementById(id);
+
+// Chart instances
+let fanChartInstance = null;
+let histChartInstance = null;
+
+function fmt(n) {
+  if (Math.abs(n) >= 1000) return '$' + Math.round(n).toLocaleString();
+  return '$' + Math.round(n);
+}
+
+function updateDisplay() {
+  const t0 = performance.now();
+
+  const params = {
+    emailList:      +$('email').value,
+    igFollowers:    +$('ig').value,
+    fbFollowers:    +$('fb').value,
+    dailyAdBudget:  +$('adBudget').value,
+    prHits:         +$('pr').value,
+    monthlyVisitors:+$('site').value,
+    goal:           +$('goal').value,
+    duration:       +$('duration').value,
+    ebPrice:        +$('ebPrice').value,
+    ebQty:          +$('ebQty').value,
+  };
+
+  // Update slider labels
+  $('emailVal').textContent = params.emailList.toLocaleString();
+  $('igVal').textContent = params.igFollowers.toLocaleString();
+  $('fbVal').textContent = params.fbFollowers.toLocaleString();
+  $('adBudgetVal').textContent = '$' + params.dailyAdBudget;
+  $('prVal').textContent = params.prHits;
+  $('siteVal').textContent = params.monthlyVisitors.toLocaleString();
+  $('goalVal').textContent = '$' + params.goal.toLocaleString();
+  $('durationVal').textContent = params.duration;
+  $('ebPriceVal').textContent = '$' + params.ebPrice;
+  $('ebQtyVal').textContent = params.ebQty;
+
+  const res = runSimulation(params);
+  const elapsed = ((performance.now() - t0) / 1000).toFixed(2);
+
+  // Scorecard
+  const probPct = Math.round(res.prob * 100);
+  let color, label;
+  if (res.prob >= 0.70)      { color = 'var(--green)';  label = 'STRONG -- launch with confidence'; }
+  else if (res.prob >= 0.50) { color = 'var(--blue)';   label = 'VIABLE -- proceed with active plan'; }
+  else if (res.prob >= 0.20) { color = 'var(--yellow)'; label = 'RISKY -- more prep recommended'; }
+  else                       { color = 'var(--red)';    label = 'DO NOT LAUNCH without more preparation'; }
+
+  $('probBig').textContent = probPct + '%';
+  $('probBig').style.color = color;
+  $('probLabel').textContent = label;
+  $('probLabel').style.color = color;
+
+  $('statRaised').textContent = fmt(res.raised.p50);
+  $('statBackers').textContent = Math.round(res.backers.p50).toLocaleString();
+  $('statNet').textContent = fmt(res.netMedian);
+  $('statNet').style.color = res.netMedian >= 0 ? 'var(--green)' : 'var(--red)';
+  $('statGoal').textContent = fmt(params.goal);
+
+  // Verdict bar
+  const vb = $('verdictBar');
+  vb.textContent = probPct >= 50
+    ? `Median: ${fmt(res.raised.p50)} raised, ${Math.round(res.backers.p50)} backers`
+    : `Range: ${fmt(res.raised.p10)} (pessimistic) to ${fmt(res.raised.p90)} (optimistic)`;
+  vb.style.background = color;
+  vb.style.color = '#fff';
+
+  // Fan chart
+  const days = Array.from({length: params.duration}, (_, i) => i + 1);
+  if (fanChartInstance) fanChartInstance.destroy();
+  fanChartInstance = new Chart($('fanChart'), {
+    type: 'line',
+    data: {
+      labels: days,
+      datasets: [
+        {
+          label: '90th pctl',
+          data: Array.from(res.trajPctls[90]),
+          borderColor: 'transparent',
+          backgroundColor: 'rgba(74,158,255,0.1)',
+          fill: '+4', pointRadius: 0, tension: 0.3,
+        },
+        {
+          label: '75th pctl',
+          data: Array.from(res.trajPctls[75]),
+          borderColor: 'transparent',
+          backgroundColor: 'rgba(74,158,255,0.15)',
+          fill: '+2', pointRadius: 0, tension: 0.3,
+        },
+        {
+          label: 'Median',
+          data: Array.from(res.trajPctls[50]),
+          borderColor: 'rgba(74,158,255,1)',
+          backgroundColor: 'transparent',
+          borderWidth: 2.5, pointRadius: 0, tension: 0.3, fill: false,
+        },
+        {
+          label: '25th pctl',
+          data: Array.from(res.trajPctls[25]),
+          borderColor: 'transparent',
+          backgroundColor: 'rgba(74,158,255,0.15)',
+          fill: false, pointRadius: 0, tension: 0.3,
+        },
+        {
+          label: '10th pctl',
+          data: Array.from(res.trajPctls[10]),
+          borderColor: 'transparent',
+          backgroundColor: 'rgba(74,158,255,0.1)',
+          fill: false, pointRadius: 0, tension: 0.3,
+        },
+        {
+          label: 'Goal',
+          data: days.map(() => params.goal),
+          borderColor: 'rgba(231,76,60,0.7)',
+          borderWidth: 2, borderDash: [6, 4],
+          pointRadius: 0, fill: false,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        title: { display: true, text: 'Funding Trajectory', color: '#ccc', font: { size: 14 } },
+        legend: { display: false },
+      },
+      scales: {
+        x: {
+          title: { display: true, text: 'Campaign Day', color: '#888' },
+          ticks: { color: '#888', maxTicksLimit: 10 },
+          grid: { color: 'rgba(255,255,255,0.05)' },
+        },
+        y: {
+          title: { display: true, text: 'Cumulative Raised', color: '#888' },
+          ticks: {
+            color: '#888',
+            callback: v => '$' + (v >= 1000 ? Math.round(v/1000) + 'K' : v),
+          },
+          grid: { color: 'rgba(255,255,255,0.05)' },
+        },
+      },
+    },
+  });
+
+  // Histogram
+  const bins = 40;
+  const minR = res.allRaised[0];
+  const maxR = res.allRaised[res.allRaised.length - 1];
+  const binWidth = Math.max(1, (maxR - minR) / bins);
+  const counts = new Array(bins).fill(0);
+  const binLabels = [];
+  for (let i = 0; i < bins; i++) {
+    const lo = minR + i * binWidth;
+    binLabels.push(Math.round(lo));
+    for (let j = 0; j < N_RUNS; j++) {
+      const v = res.allRaised[j];
+      if (v >= lo && (i === bins - 1 || v < lo + binWidth)) counts[i]++;
+    }
+  }
+
+  // Color bars: red below goal, green above
+  const barColors = binLabels.map(v => v >= params.goal ? 'rgba(39,174,96,0.6)' : 'rgba(74,158,255,0.6)');
+
+  if (histChartInstance) histChartInstance.destroy();
+  histChartInstance = new Chart($('histChart'), {
+    type: 'bar',
+    data: {
+      labels: binLabels,
+      datasets: [{
+        data: counts,
+        backgroundColor: barColors,
+        borderWidth: 0,
+        barPercentage: 1, categoryPercentage: 1,
+      }],
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        title: { display: true, text: 'Distribution of Outcomes', color: '#ccc', font: { size: 14 } },
+        legend: { display: false },
+      },
+      scales: {
+        x: {
+          ticks: {
+            color: '#888', maxTicksLimit: 6,
+            callback: function(val, idx) {
+              const v = binLabels[idx];
+              return '$' + (v >= 1000 ? Math.round(v/1000) + 'K' : v);
+            },
+          },
+          grid: { display: false },
+        },
+        y: {
+          ticks: { color: '#888' },
+          grid: { color: 'rgba(255,255,255,0.05)' },
+        },
+      },
+    },
+  });
+
+  $('timing').textContent = `${N_RUNS.toLocaleString()} Monte Carlo runs in ${elapsed}s`;
+}
+
+// Wire up all sliders
+const sliderIds = ['email','ig','fb','adBudget','pr','site','goal','duration','ebPrice','ebQty'];
+sliderIds.forEach(id => {
+  $(id).addEventListener('input', () => {
+    // Quick label update while dragging
+    const v = +$(id).value;
+    const valEl = $(id + 'Val');
+    if (id === 'adBudget' || id === 'ebPrice' || id === 'goal') {
+      valEl.textContent = '$' + v.toLocaleString();
+    } else {
+      valEl.textContent = v.toLocaleString();
+    }
+  });
+  $(id).addEventListener('change', updateDisplay);
+});
+
+// Initial render
+updateDisplay();
+</script>
+</body>
+</html>
