@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CLOAK by BossCovers — Go-to-Market Intelligence</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.min.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<style>
+/* Viridis tokens */
+:root {
+  --v-purple: #440154;
+  --v-blue:   #31688e;
+  --v-teal:   #21908c;
+  --v-green:  #35b779;
+  --v-lime:   #90d743;
+  --v-yellow: #fde725;
+  --max-w:    860px;
+}
+
+/* Layout */
+.wrap { max-width: var(--max-w); margin: 0 auto; padding: 0 2rem; }
+
+/* Section tag (circle + title) */
+.section-num {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 2rem; height: 2rem; border-radius: 9999px;
+  background: var(--v-teal); color: #fff;
+  font-weight: 800; font-size: 0.85rem; flex-shrink: 0;
+}
+.section-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem; }
+.section-header h2 { font-size: 1.5rem; font-weight: 700; color: #111; }
+.section-sub { font-size: 0.9rem; color: #6b7280; margin-bottom: 2rem; line-height: 1.6; }
+
+/* Stat cards (infographic-B: left-border, viridis tinted) */
+.stat-row { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+.stat-card {
+  flex: 1; min-width: 120px;
+  padding: 0.6rem 0.75rem;
+  background: #f9fafb; border-radius: 0 6px 6px 0;
+}
+.stat-card .n { display: block; font-size: 1.4rem; font-weight: 800; }
+.stat-card .l { display: block; font-size: 0.75rem; color: #6b7280; line-height: 1.4; margin-top: 2px; }
+.stat-card:nth-child(1) { border-left: 3px solid var(--v-purple); }
+.stat-card:nth-child(1) .n { color: var(--v-purple); }
+.stat-card:nth-child(2) { border-left: 3px solid var(--v-blue); }
+.stat-card:nth-child(2) .n { color: var(--v-blue); }
+.stat-card:nth-child(3) { border-left: 3px solid var(--v-teal); }
+.stat-card:nth-child(3) .n { color: var(--v-teal); }
+.stat-card:nth-child(4) { border-left: 3px solid var(--v-green); }
+.stat-card:nth-child(4) .n { color: var(--v-green); }
+
+/* Callout boxes */
+.callout {
+  border-left: 3px solid var(--v-teal);
+  background: #f0fdf9; padding: 1rem 1.25rem;
+  border-radius: 0 8px 8px 0; margin: 1.5rem 0;
+}
+.callout.warn { border-color: #b45309; background: #fefce8; }
+.callout.flag { border-color: var(--v-purple); background: #faf5ff; }
+.callout-label {
+  font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--v-teal); font-weight: 700; margin-bottom: 0.35rem;
+}
+.callout.warn .callout-label { color: #b45309; }
+.callout.flag .callout-label { color: var(--v-purple); }
+
+/* Tables */
+.tbl-wrap { overflow-x: auto; margin-bottom: 1.5rem; }
+table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+th { background: #f3f4f6; padding: 0.6rem 0.75rem; text-align: left;
+     font-weight: 600; color: #374151; border-bottom: 2px solid #e5e7eb; }
+td { padding: 0.55rem 0.75rem; border-bottom: 1px solid #f3f4f6; }
+td.mono { font-family: 'Courier New', monospace; }
+td.em { font-weight: 600; color: #111; }
+
+/* Tags */
+.tag-win  { background: #dcfce7; color: #166534; border-radius: 4px; padding: 2px 6px; font-size: 0.75rem; font-weight: 600; }
+.tag-meh  { background: #fef9c3; color: #854d0e; border-radius: 4px; padding: 2px 6px; font-size: 0.75rem; font-weight: 600; }
+.tag-loss { background: #fee2e2; color: #991b1b; border-radius: 4px; padding: 2px 6px; font-size: 0.75rem; font-weight: 600; }
+
+/* Source citation */
+.src { font-size: 0.7rem; color: #9ca3af; font-weight: 400; margin-left: 0.5rem; }
+
+/* Block (subsection within a section) */
+.block { margin-bottom: 2.5rem; }
+.block h3 { font-size: 1rem; font-weight: 700; color: #111; margin-bottom: 0.5rem; padding-bottom: 0.4rem; border-bottom: 1px solid #e5e7eb; }
+
+/* Lessons */
+.lessons { display: grid; gap: 1rem; }
+.lesson { background: #f9fafb; border-radius: 8px; padding: 1rem 1.25rem; border-left: 3px solid #e5e7eb; }
+.lesson.flag { border-color: var(--v-purple); background: #fdf4ff; }
+.lesson .lnum { font-size: 0.65rem; text-transform: uppercase; letter-spacing: .12em; color: #9ca3af; font-weight: 700; margin-bottom: 4px; }
+.lesson h4 { font-size: 0.95rem; font-weight: 700; color: #111; margin-bottom: 0.4rem; }
+.lesson p { font-size: 0.85rem; color: #374151; line-height: 1.65; }
+
+/* Bar chart (horizontal) */
+.bar-chart { display: grid; gap: 0.75rem; margin: 1rem 0; }
+.bar-row { display: grid; grid-template-columns: 1fr 2fr auto; align-items: center; gap: 0.75rem; }
+.bar-label { font-size: 0.8rem; font-weight: 500; }
+.bar-track { background: #e5e7eb; border-radius: 4px; height: 12px; }
+.bar-fill { background: var(--v-teal); height: 100%; border-radius: 4px; }
+.bar-fill.amber { background: #b45309; }
+.bar-val { font-size: 0.78rem; font-weight: 600; color: #374151; white-space: nowrap; }
+
+/* State box */
+.state-box { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; }
+.state-item { flex: 1; min-width: 140px; background: #f9fafb; border-radius: 8px; padding: 1rem; text-align: center; }
+.state-item .n { display: block; font-size: 1.8rem; font-weight: 800; color: var(--v-teal); }
+.state-item .l { display: block; font-size: 0.75rem; color: #6b7280; margin: 4px 0; }
+.state-item .plain { display: block; font-size: 0.7rem; color: #9ca3af; }
+
+/* Action list */
+.action-list { display: grid; gap: 1rem; }
+.action-item { display: grid; grid-template-columns: 2.5rem 1fr; gap: 0.75rem; align-items: start; padding: 1rem; background: #f9fafb; border-radius: 8px; }
+.action-num { width: 2.5rem; height: 2.5rem; border-radius: 9999px; background: var(--v-teal); color: #fff; font-weight: 800; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.action-item.alt .action-num { background: var(--v-purple); }
+.action-item h4 { font-size: 0.95rem; font-weight: 700; color: #111; margin-bottom: 0.3rem; }
+.action-item p { font-size: 0.85rem; color: #374151; line-height: 1.6; }
+.action-timeline { font-size: 0.7rem; font-weight: 600; color: var(--v-teal); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 0.25rem; }
+
+/* ─── Simulator section ───────────────────────────── */
+#simulator {
+  background: #f0fdf9;
+  border-top: 2px solid var(--v-teal);
+  border-bottom: 2px solid var(--v-teal);
+}
+
+/* Simulator sub-components (white world, no dark vars) */
+.sim-card {
+  background: #fff; border-radius: 12px; padding: 1rem 1.25rem;
+  border: 1px solid #d1fae5; margin-bottom: 1rem;
+}
+.sim-scorecard { text-align: center; }
+.sim-prob { font-size: 3rem; font-weight: 800; line-height: 1.1; color: var(--v-teal); }
+.sim-prob-label { font-size: 0.9rem; color: #374151; margin-bottom: 0.75rem; }
+.sim-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 0.75rem; }
+.sim-stat { background: #f0fdf9; border-radius: 8px; padding: 0.5rem 0.75rem; }
+.sim-stat-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7280; }
+.sim-stat-value { font-size: 1rem; font-weight: 700; color: #111; margin-top: 2px; }
+.sim-verdict { padding: 0.5rem 0.75rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; color: #fff; margin: 0.5rem 0; text-align: center; background: var(--v-teal); }
+
+.sim-section-title { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--v-teal); font-weight: 700; margin-bottom: 0.75rem; }
+.slider-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.6rem; font-size: 0.82rem; }
+.slider-row label { flex: 0 0 120px; color: #374151; }
+.slider-row input[type=range] { flex: 1; accent-color: var(--v-teal); }
+.slider-val { flex: 0 0 60px; text-align: right; font-weight: 600; color: var(--v-teal); font-size: 0.82rem; }
+.chart-wrap { background: #fff; border-radius: 8px; border: 1px solid #d1fae5; padding: 0.75rem; margin-bottom: 0.75rem; }
+.timing { font-size: 0.7rem; color: #9ca3af; text-align: right; }
+
+/* Optimizer */
+.opt-section { background: #fff; border-radius: 12px; padding: 1rem 1.25rem; border: 1px solid #d1fae5; margin-top: 1rem; }
+.opt-btn { background: var(--v-teal); color: #fff; border: none; padding: 0.5rem 1.25rem; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 0.85rem; }
+.opt-btn:disabled { opacity: 0.5; }
+.cost-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin: 0.75rem 0; font-size: 0.78rem; }
+.cost-grid input[type=number] { width: 100%; border: 1px solid #d1fae5; border-radius: 4px; padding: 3px 6px; font-size: 0.78rem; }
+.opt-progress { font-size: 0.75rem; color: var(--v-teal); margin-top: 0.5rem; }
+.opt-result { font-size: 0.82rem; margin-top: 0.75rem; }
+
+/* Print-only scorecard */
+.print-scorecard { display: none; }
+
+/* ─── Print styles ────────────────────────────────── */
+@media print {
+  nav, .no-print { display: none !important; }
+  .print-scorecard { display: grid !important; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin: 1rem 0; }
+  .print-stat { border: 1px solid #e5e7eb; border-radius: 6px; padding: 0.75rem; text-align: center; }
+  .print-stat .n { font-size: 1.5rem; font-weight: 800; color: var(--v-teal); display: block; }
+  .print-stat .l { font-size: 0.7rem; color: #6b7280; display: block; }
+  section { page-break-inside: avoid; }
+  .block, table, .lesson, .action-item { page-break-inside: avoid; }
+  body { font-size: 12px; }
+  a[href]::after { content: none; }
+  #simulator { background: #f9fafb; border: 1px solid #e5e7eb; }
+  #simulator .no-print { display: none !important; }
+}
+</style>
+</head>
+<body class="bg-white text-gray-900">
+
+<!-- NAV -->
+<nav class="sticky top-0 z-50 bg-[#21908c] border-b-2 border-[#35b779]">
+  <div class="wrap flex items-center justify-between h-12">
+    <span class="font-mono text-xs text-white/50"><strong class="text-white">CLOAK</strong> · BossCovers</span>
+    <div class="flex gap-0.5" id="navLinks">
+      <a href="#evidence"  class="font-mono text-[11px] uppercase tracking-widest text-white/60 px-3 py-1.5 rounded hover:text-white hover:bg-white/10 transition-all">Evidence</a>
+      <a href="#lessons"   class="font-mono text-[11px] uppercase tracking-widest text-white/60 px-3 py-1.5 rounded hover:text-white hover:bg-white/10 transition-all">Lessons</a>
+      <a href="#simulator" class="font-mono text-[11px] uppercase tracking-widest text-white/60 px-3 py-1.5 rounded hover:text-white hover:bg-white/10 transition-all">Simulator</a>
+      <a href="#forecast"  class="font-mono text-[11px] uppercase tracking-widest text-white/60 px-3 py-1.5 rounded hover:text-white hover:bg-white/10 transition-all">Forecast</a>
+      <a href="#actions"   class="font-mono text-[11px] uppercase tracking-widest text-white/60 px-3 py-1.5 rounded hover:text-white hover:bg-white/10 transition-all">Actions</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="bg-[#0f1923] py-16 px-8">
+  <div class="wrap">
+    <div class="font-mono text-xs tracking-widest text-[#21908c] uppercase mb-4">Market Analysis Report · April 2026</div>
+    <h1 class="text-3xl font-bold text-white mb-3">CLOAK by BossCovers<br><span class="text-[#21908c]">Go-to-Market Intelligence</span></h1>
+    <p class="text-sm text-white/60 mb-8">Prepared from 14,648 comparable campaigns · Monte Carlo simulation engine · Industry benchmarks</p>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      <div class="bg-white/5 rounded-lg p-4">
+        <span class="block text-2xl font-extrabold text-[#21908c]">43%</span>
+        <span class="text-xs text-white/50 mt-1 block">Industry campaign<br>success rate</span>
+      </div>
+      <div class="bg-white/5 rounded-lg p-4">
+        <span class="block text-2xl font-extrabold text-[#440154]">$58</span>
+        <span class="text-xs text-white/50 mt-1 block">Estimated cost to acquire<br>one customer via Meta ads</span>
+      </div>
+      <div class="bg-white/5 rounded-lg p-4">
+        <span class="block text-2xl font-extrabold text-[#35b779]">$150</span>
+        <span class="text-xs text-white/50 mt-1 block">Maximum break-even<br>customer acquisition cost</span>
+      </div>
+      <div class="bg-white/5 rounded-lg p-4">
+        <span class="block text-2xl font-extrabold text-[#fde725]" id="heroProbStat">37%</span>
+        <span class="text-xs text-white/50 mt-1 block">Current probability of<br>funding at $15K goal</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- § 1 EVIDENCE -->
+<section id="evidence" class="py-16">
+  <div class="wrap">
+    <div class="section-header">
+      <span class="section-num">1</span>
+      <h2>The Evidence</h2>
+    </div>
+    <p class="section-sub">Numbers sourced from public datasets, published fee schedules, and a calibrated Monte Carlo model. Platform fees and industry success rates are externally verified. CAC estimates and conversion figures are model outputs — not independently sourced benchmarks.</p>
+    <!-- EVIDENCE CONTENT PLACEHOLDER -->
+  </div>
+</section>
+
+<!-- § 2 LESSONS -->
+<section id="lessons" class="py-16 bg-gray-50">
+  <div class="wrap">
+    <div class="section-header">
+      <span class="section-num">2</span>
+      <h2>What the Evidence Means</h2>
+    </div>
+    <p class="section-sub">Six findings that change the strategy.</p>
+    <!-- LESSONS CONTENT PLACEHOLDER -->
+  </div>
+</section>
+
+<!-- § 3 SIMULATOR -->
+<section id="simulator" class="py-16">
+  <div class="wrap">
+    <div class="section-header">
+      <span class="section-num">3</span>
+      <h2>Interactive Model</h2>
+    </div>
+    <p class="section-sub">Monte Carlo crowdfunding projection — drag sliders to explore scenarios. 1,000 simulated runs per change.</p>
+    <!-- SIMULATOR CONTENT PLACEHOLDER -->
+    <div class="print-scorecard">
+      <div class="print-stat"><span class="n" id="printProb">--</span><span class="l">Probability of funding</span></div>
+      <div class="print-stat"><span class="n" id="printRaised">--</span><span class="l">Raised (median)</span></div>
+      <div class="print-stat"><span class="n" id="printBackers">--</span><span class="l">Backers (median)</span></div>
+      <div class="print-stat"><span class="n" id="printNet">--</span><span class="l">Net revenue (median)</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- § 4 FORECAST -->
+<section id="forecast" class="py-16">
+  <div class="wrap">
+    <div class="section-header">
+      <span class="section-num">4</span>
+      <h2>What the Data Predicts for BossCovers</h2>
+    </div>
+    <p class="section-sub">Plain numbers. No jargon.</p>
+    <!-- FORECAST CONTENT PLACEHOLDER -->
+  </div>
+</section>
+
+<!-- § 5 ACTIONS -->
+<section id="actions" class="py-16 bg-gray-50">
+  <div class="wrap">
+    <div class="section-header">
+      <span class="section-num">5</span>
+      <h2>What to Do Next</h2>
+    </div>
+    <p class="section-sub">In order of priority. Each action sets up the next one.</p>
+    <!-- ACTIONS CONTENT PLACEHOLDER -->
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="bg-[#0f1923] py-6">
+  <div class="wrap flex flex-col md:flex-row justify-between items-center gap-2 text-xs text-white/40 font-mono">
+    <span>BossCovers CLOAK · Market Analysis Report · April 2026</span>
+    <span>Data: Kaggle KS Dataset · Monte Carlo simulation · IndieGoGo published fee schedule</span>
+  </div>
+</footer>
+
+<!-- JS placeholder — simulator JS added in Task 6 -->
+<script>
+// Simulator JS will be added in Task 6
+</script>
+
+</body>
+</html>
