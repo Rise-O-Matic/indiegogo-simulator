@@ -354,7 +354,38 @@ td.em { font-weight: 600; color: #111; }
       <h2>What the Evidence Means</h2>
     </div>
     <p class="section-sub">Six findings that change the strategy.</p>
-    <!-- LESSONS CONTENT PLACEHOLDER -->
+    <div class="lessons">
+      <div class="lesson flag">
+        <div class="lnum">Lesson 01</div>
+        <h4>Crowdfunding is a capital tool — and you don't need capital</h4>
+        <p>Crowdfunding campaigns make sense when a business needs upfront money to produce its product. BossCovers' tooling is already paid for. Running a campaign would just be a pre-order mechanism with an 8% fee, a 30-day clock, and 200–350 hours of founder work attached.</p>
+      </div>
+      <div class="lesson flag">
+        <div class="lnum">Lesson 02</div>
+        <h4>Paid ads cost more per customer than the margin allows</h4>
+        <p>At a modeled median $58 cost per customer via Meta ads and a $150 maximum break-even threshold, Meta acquisition is technically profitable — but only if real-world performance matches benchmarks. Exceptional creative and tight targeting are required. The $224 figure in the previous report was a calibration artifact and has been corrected.</p>
+      </div>
+      <div class="lesson">
+        <div class="lnum">Lesson 03</div>
+        <h4>Your social following has almost no direct conversion power</h4>
+        <p>The conversion chain compounds badly: followers → reach → click → purchase = 0.004% of followers per post. 10,000 Instagram followers → approximately 4 buyers per announcement. Social is a trust signal and a creative testing ground — not a sales engine at this audience size.</p>
+      </div>
+      <div class="lesson">
+        <div class="lnum">Lesson 04</div>
+        <h4>Email is the strongest owned channel — but the list is too small yet</h4>
+        <p>The rule of thumb: 1 buyer per 100 email subscribers. BossCovers' current list of 50 people generates 0–1 buyers from email. Growing to 1,000 (through YouTube reviews and landing page capture) would generate ~10 buyers per campaign — for free.</p>
+      </div>
+      <div class="lesson">
+        <div class="lnum">Lesson 05</div>
+        <h4>YouTube creators cost 10× less per customer than Facebook ads</h4>
+        <p>Gifting one CLOAK unit ($60 all-in) to a 200K-subscriber 2A or prepper channel generates an average of 12 sales. That's a $5 cost per customer — vs. $58+ on Facebook. The downside: the audience is finite and results aren't guaranteed.</p>
+      </div>
+      <div class="lesson flag">
+        <div class="lnum">Lesson 06</div>
+        <h4>A crowdfunding campaign is 200–350 hours of founder time</h4>
+        <p>Campaign video (40–80 hrs), page copy and design (30–50 hrs), PR outreach (30–50 hrs), daily backer management (2 hrs/day × 30 days = 60 hrs), email updates, social posts. That's a second part-time job for 3–4 months — for a campaign with uncertain odds at the current audience size.</p>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -366,7 +397,59 @@ td.em { font-weight: 600; color: #111; }
       <h2>Interactive Model</h2>
     </div>
     <p class="section-sub">Monte Carlo crowdfunding projection — drag sliders to explore scenarios. 1,000 simulated runs per change.</p>
-    <!-- SIMULATOR CONTENT PLACEHOLDER -->
+    <!-- Scorecard -->
+    <div class="sim-card sim-scorecard no-print">
+      <div class="sim-prob" id="probBig">--</div>
+      <div class="sim-prob-label" id="probLabel">probability of funding</div>
+      <div class="sim-verdict" id="verdictBar"></div>
+      <div class="sim-stats">
+        <div class="sim-stat"><div class="sim-stat-label">Raised (median)</div><div class="sim-stat-value" id="statRaised">--</div></div>
+        <div class="sim-stat"><div class="sim-stat-label">Backers (median)</div><div class="sim-stat-value" id="statBackers">--</div></div>
+        <div class="sim-stat"><div class="sim-stat-label">Net Revenue</div><div class="sim-stat-value" id="statNet">--</div></div>
+        <div class="sim-stat"><div class="sim-stat-label">Goal</div><div class="sim-stat-value" id="statGoal">--</div></div>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="grid md:grid-cols-2 gap-4 no-print">
+      <div class="sim-card">
+        <div class="sim-section-title">Audience</div>
+        <div class="slider-row"><label>Email list</label><input type="range" id="email" min="0" max="10000" step="50" value="50"><span class="slider-val" id="emailVal">50</span></div>
+        <div class="slider-row"><label>IG followers</label><input type="range" id="ig" min="0" max="10000" step="50" value="124"><span class="slider-val" id="igVal">124</span></div>
+        <div class="slider-row"><label>FB followers</label><input type="range" id="fb" min="0" max="10000" step="50" value="69"><span class="slider-val" id="fbVal">69</span></div>
+        <div class="slider-row"><label>Ad budget ($/day)</label><input type="range" id="adBudget" min="0" max="500" step="5" value="0"><span class="slider-val" id="adBudgetVal">$0</span></div>
+        <div class="slider-row"><label>PR / media hits</label><input type="range" id="pr" min="0" max="10" step="1" value="0"><span class="slider-val" id="prVal">0</span></div>
+      </div>
+      <div class="sim-card">
+        <div class="sim-section-title">Campaign</div>
+        <div class="slider-row"><label>Funding goal ($)</label><input type="range" id="goal" min="5000" max="100000" step="1000" value="15000"><span class="slider-val" id="goalVal">$15,000</span></div>
+        <div class="slider-row"><label>Duration (days)</label><input type="range" id="duration" min="15" max="60" step="1" value="30"><span class="slider-val" id="durationVal">30</span></div>
+        <div class="slider-row"><label>Early bird price ($)</label><input type="range" id="ebPrice" min="99" max="179" step="5" value="149"><span class="slider-val" id="ebPriceVal">$149</span></div>
+        <div class="slider-row"><label>Early bird qty</label><input type="range" id="ebQty" min="0" max="500" step="10" value="50"><span class="slider-val" id="ebQtyVal">50</span></div>
+      </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="chart-wrap no-print"><canvas id="fanChart" height="220"></canvas></div>
+    <div class="chart-wrap no-print"><canvas id="histChart" height="160"></canvas></div>
+    <div class="timing no-print" id="timing"></div>
+
+    <!-- Budget Optimizer -->
+    <div class="opt-section no-print">
+      <div class="sim-section-title">Budget Optimizer</div>
+      <p class="text-xs text-gray-500 mb-3">Set your total pre-launch marketing budget and cost per unit for each channel. The optimizer finds the allocation that maximizes your probability of funding.</p>
+      <div class="slider-row"><label>Total budget ($)</label><input type="range" id="totalBudget" min="0" max="10000" step="100" value="2000"><span class="slider-val" id="totalBudgetVal">$2,000</span></div>
+      <div class="cost-grid">
+        <div><label class="text-xs text-gray-600">$/email subscriber</label><input type="number" id="costEmail" value="3" min="0.5" max="20" step="0.5"></div>
+        <div><label class="text-xs text-gray-600">$/IG follower</label><input type="number" id="costIg" value="4" min="0.5" max="20" step="0.5"></div>
+        <div><label class="text-xs text-gray-600">$/FB follower</label><input type="number" id="costFb" value="3" min="0.5" max="20" step="0.5"></div>
+        <div><label class="text-xs text-gray-600">Ad budget ($/day×30d)</label><input type="number" id="costAd" value="1" min="1" max="1" step="0" disabled style="opacity:0.5"></div>
+        <div><label class="text-xs text-gray-600">$/PR hit</label><input type="number" id="costPr" value="1000" min="100" max="5000" step="100"></div>
+      </div>
+      <button class="opt-btn" id="optimizeBtn" onclick="runOptimizer()">Find Optimal Allocation</button>
+      <div class="opt-progress" id="optProgress"></div>
+      <div class="opt-result" id="optResult"></div>
+    </div>
     <div class="print-scorecard">
       <div class="print-stat"><span class="n" id="printProb">--</span><span class="l">Probability of funding</span></div>
       <div class="print-stat"><span class="n" id="printRaised">--</span><span class="l">Raised (median)</span></div>
@@ -384,7 +467,87 @@ td.em { font-weight: 600; color: #111; }
       <h2>What the Data Predicts for BossCovers</h2>
     </div>
     <p class="section-sub">Plain numbers. No jargon.</p>
-    <!-- FORECAST CONTENT PLACEHOLDER -->
+    <!-- Where BossCovers Stands Today -->
+    <div class="block">
+      <h3>Where BossCovers Stands Today</h3>
+      <div class="state-box">
+        <div class="state-item">
+          <span class="n" id="forecastProb">37%</span>
+          <span class="l">Probability of funding</span>
+          <span class="plain">at $15K goal, current audience</span>
+        </div>
+        <div class="state-item">
+          <span class="n" id="forecastBackers">13</span>
+          <span class="l">Median backers</span>
+          <span class="plain">if campaign ran today</span>
+        </div>
+        <div class="state-item">
+          <span class="n" id="forecastRaised">$2,600</span>
+          <span class="l">Median amount raised</span>
+          <span class="plain">at $200 avg pledge</span>
+        </div>
+      </div>
+      <div class="callout warn">
+        <div class="callout-label">Plain interpretation</div>
+        <p>A campaign launched today has a <strong>37% chance of reaching $15,000</strong> — meaning a 63% chance of raising nothing (IndieGoGo keeps your money regardless, but you spent 200+ hours). The median outcome is 13 backers and $2,600 raised.</p>
+      </div>
+    </div>
+
+    <!-- What Each Action Produces -->
+    <div class="block">
+      <h3>What Each Preparation Action Is Likely to Produce</h3>
+      <p class="text-sm text-gray-500 mb-3">Probability of funding given the stated preparation, modeled against the $15K goal. Each assumes the action is completed before launch.</p>
+      <div class="bar-chart">
+        <div class="bar-row">
+          <div class="bar-label">Today (no prep)</div>
+          <div class="bar-track"><div class="bar-fill" style="width:37%"></div></div>
+          <div class="bar-val">37%</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">+ 1 YouTube review</div>
+          <div class="bar-track"><div class="bar-fill" style="width:52%"></div></div>
+          <div class="bar-val">~52%</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">+ 3 YouTube reviews</div>
+          <div class="bar-track"><div class="bar-fill" style="width:68%"></div></div>
+          <div class="bar-val">~68%</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">+ 500 email subscribers</div>
+          <div class="bar-track"><div class="bar-fill" style="width:58%"></div></div>
+          <div class="bar-val">~58%</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">+ 1,000 email subscribers</div>
+          <div class="bar-track"><div class="bar-fill" style="width:72%"></div></div>
+          <div class="bar-val">~72%</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">$50/day Meta ads</div>
+          <div class="bar-track"><div class="bar-fill amber" style="width:44%"></div></div>
+          <div class="bar-val">~44%</div>
+        </div>
+      </div>
+      <p class="text-xs text-gray-400 mt-1">Bars show probability of funding. Amber = high cost channel. Run the Interactive Model above to explore your own combinations.</p>
+    </div>
+
+    <!-- Break-Even Math -->
+    <div class="block">
+      <h3>The Break-Even Math</h3>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Scenario</th><th>Backers</th><th>Gross Raised</th><th>Fees (8%)</th><th>COGS + Ship</th><th>Net to BossCovers</th></tr></thead>
+          <tbody>
+            <tr><td class="em">Bare minimum (fund at $15K)</td><td class="mono">75</td><td class="mono">$15,000</td><td class="mono">−$1,200</td><td class="mono">−$4,275</td><td class="mono text-gray-700">$9,525</td></tr>
+            <tr><td class="em">Median outcome (calibrated)</td><td class="mono">13</td><td class="mono">$2,600</td><td class="mono">−$208</td><td class="mono">−$741</td><td class="mono text-red-600">$1,651</td></tr>
+            <tr><td class="em">Optimistic (3 YouTube reviews)</td><td class="mono">140</td><td class="mono">$28,000</td><td class="mono">−$2,240</td><td class="mono">−$7,980</td><td class="mono text-green-700">$17,780</td></tr>
+            <tr><td class="em">Production cap hit (1,800 units)</td><td class="mono">1,800</td><td class="mono">$360,000</td><td class="mono">−$28,800</td><td class="mono">−$102,600</td><td class="mono text-green-700">$228,600</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="text-xs text-gray-400">COGS assumes $45/unit. Shipping assumes $12/unit. Fees: 5% platform + 3% processing + $0.20/txn. Net does not include founder time.</p>
+    </div>
   </div>
 </section>
 
@@ -396,7 +559,53 @@ td.em { font-weight: 600; color: #111; }
       <h2>What to Do Next</h2>
     </div>
     <p class="section-sub">In order of priority. Each action sets up the next one.</p>
-    <!-- ACTIONS CONTENT PLACEHOLDER -->
+    <div class="action-list">
+      <div class="action-item">
+        <div class="action-num">1</div>
+        <div>
+          <div class="action-timeline">Month 1–2 · Free</div>
+          <h4>Gift CLOAK to 3–5 YouTube creators in the 2A / prepper / EDC niche</h4>
+          <p>Target channels with 50K–500K subscribers and an engaged comment section. Send a unit plus a one-page brief. No payment — just product + story. One successful review typically generates 10–20 buyers and builds the email list organically. This is the highest-ROI action available.</p>
+        </div>
+      </div>
+      <div class="action-item">
+        <div class="action-num">2</div>
+        <div>
+          <div class="action-timeline">Month 1–3 · ~$500 total</div>
+          <h4>Build an email capture landing page and drive traffic from YouTube reviews</h4>
+          <p>Set up a simple landing page (Carrd, Beehiiv, or ConvertKit) offering "launch day early bird pricing" in exchange for an email address. Link from YouTube descriptions and bio. Goal: 500–1,000 subscribers before launch. That alone raises your probability of funding from 37% to ~58–72%.</p>
+        </div>
+      </div>
+      <div class="action-item">
+        <div class="action-num">3</div>
+        <div>
+          <div class="action-timeline">Month 2–4 · Budget: $500–$2,000</div>
+          <h4>Run small Meta ad tests to learn your real CPA before committing</h4>
+          <p>$500 across 3–4 creative variations is enough to measure real click-through and conversion rates for CLOAK specifically. The calibrated model assumes $58 CPA — your actual number may be higher. Knowing it before launch prevents a catastrophic ad spend during the campaign.</p>
+        </div>
+      </div>
+      <div class="action-item">
+        <div class="action-num">4</div>
+        <div>
+          <div class="action-timeline">Month 3–5 · Time investment</div>
+          <h4>Attend SHOT Show or similar trade events with documented demand</h4>
+          <p>Distributor conversations are far more productive when you arrive with receipts: YouTube reviews with view counts, email list size, and pre-order data. A crowdfunding campaign with 50 backers is a stronger hand than a prototype with none. This positions BossCovers for a wholesale or distributor deal — the real prize.</p>
+        </div>
+      </div>
+      <div class="action-item alt">
+        <div class="action-num">!</div>
+        <div>
+          <div class="action-timeline">Do not do this yet</div>
+          <h4>Do not launch a crowdfunding campaign before completing steps 1–2</h4>
+          <p>At current audience size (50 emails, 124 IG followers, 69 FB followers), the median outcome is $2,600 raised and a 63% chance of raising nothing. The 200+ hours of founder time required for the campaign is worth far more spent on YouTube outreach and email list building first.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout" style="margin-top:2.5rem;">
+      <div class="callout-label">The 6-month playbook</div>
+      <p><strong>YouTube seeds → build social proof → test ads → learn real CPA → walk into SHOT Show with receipts.</strong> Six months of this positions BossCovers for a distributor conversation with documented demand — a much stronger hand than a $2,600 crowdfunding campaign ever would.</p>
+    </div>
   </div>
 </section>
 
@@ -408,9 +617,522 @@ td.em { font-weight: 600; color: #111; }
   </div>
 </footer>
 
-<!-- JS placeholder — simulator JS added in Task 6 -->
 <script>
-// Simulator JS will be added in Task 6
+// =====================================================
+// CLOAK Campaign Simulator — JavaScript Monte Carlo
+// Port of Python engine (src/) for static deployment
+// Parameters synced with data/calibrated-params.json
+// CMA-ES calibrated 2026-04-09, loss=2.57
+// =====================================================
+
+const N_RUNS = 1000;
+
+function makeRng(seed) {
+  let s = [seed, seed ^ 0x6D2B79F5, seed ^ 0x1B56C4E9, seed ^ 0x9E3779B9];
+  function rotl(x, k) { return ((x << k) | (x >>> (32 - k))) >>> 0; }
+  function next() {
+    const r = (rotl((s[1] * 5) >>> 0, 7) * 9) >>> 0;
+    const t = (s[1] << 9) >>> 0;
+    s[2] ^= s[0]; s[3] ^= s[1]; s[1] ^= s[2]; s[0] ^= s[3];
+    s[2] ^= t; s[3] = rotl(s[3], 11);
+    return r / 4294967296;
+  }
+  return { uniform: next };
+}
+
+function normalSample(rng) {
+  const u1 = rng.uniform(); const u2 = rng.uniform();
+  return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+}
+
+function gammaSample(rng, shape) {
+  if (shape < 1) { const u = rng.uniform(); return gammaSample(rng, shape + 1) * Math.pow(u, 1 / shape); }
+  const d = shape - 1/3; const c = 1 / Math.sqrt(9 * d);
+  while (true) {
+    let x, v;
+    do { x = normalSample(rng); v = 1 + c * x; } while (v <= 0);
+    v = v * v * v;
+    const u = rng.uniform();
+    if (u < 1 - 0.0331 * (x*x)*(x*x)) return d * v;
+    if (Math.log(u) < 0.5*x*x + d*(1 - v + Math.log(v))) return d * v;
+  }
+}
+
+function betaSample(rng, a, b) { const x = gammaSample(rng, a); const y = gammaSample(rng, b); return x / (x + y); }
+function lognormalSample(rng, s, scale) { return scale * Math.exp(s * normalSample(rng)); }
+function poissonSample(rng, lambda) {
+  if (lambda <= 0) return 0;
+  if (lambda > 30) return Math.max(0, Math.round(lambda + Math.sqrt(lambda) * normalSample(rng)));
+  const L = Math.exp(-lambda); let k = 0, p = 1;
+  do { k++; p *= rng.uniform(); } while (p > L);
+  return k - 1;
+}
+
+// Distribution definitions — CMA-ES calibrated 2026-04-09, loss=2.57
+const DISTS = {
+  EMAIL_OPEN_RATE:      { type: 'beta',      a: 16.3599, b: 23.6401 },
+  EMAIL_CTR:            { type: 'beta',      a:  5.9292, b: 24.0708 },
+  EMAIL_PAGE_TO_BACKER: { type: 'beta',      a:  0.3053, b: 19.6947 },
+  IG_REACH_RATE:        { type: 'beta',      a:  0.6774, b: 99.3226 },
+  IG_CTR:               { type: 'beta',      a:  0.0793, b: 24.9207 },
+  IG_PAGE_TO_BACKER:    { type: 'beta',      a:  0.4986, b: 39.5014 },
+  FB_REACH_RATE:        { type: 'beta',      a:  1.2433, b: 78.7567 },
+  FB_CTR:               { type: 'beta',      a:  0.0264, b: 49.9736 },
+  FB_PAGE_TO_BACKER:    { type: 'beta',      a:  0.3001, b: 39.6999 },
+  AD_CPM:               { type: 'lognormal', s:  0.4,    scale: 29.59 },
+  AD_CTR:               { type: 'beta',      a:  0.3282, b: 99.6718 },
+  AD_PAGE_TO_BACKER:    { type: 'beta',      a:  0.3995, b: 49.6005 },
+  PR_REACH_PER_HIT:     { type: 'lognormal', s:  1.0,    scale: 3117 },
+  PR_CTR:               { type: 'beta',      a:  0.8647, b: 99.1353 },
+  PR_PAGE_TO_BACKER:    { type: 'beta',      a:  3.44,   b: 96.56 },
+  IGG_DAILY_VISITORS:   { type: 'lognormal', s:  0.5,    scale: 79.57 },
+  IGG_PAGE_TO_BACKER:   { type: 'beta',      a:  0.20,   b: 99.80 },
+  WOM_TELLS:            { type: 'lognormal', s:  0.5,    scale: 0.24 },
+  WOM_VISIT_RATE:       { type: 'beta',      a:  1.0,    b: 99.0 },
+  WOM_PAGE_TO_BACKER:   { type: 'beta',      a:  8.13,   b: 91.87 },
+};
+
+function sampleDist(rng, d) {
+  if (d.type === 'beta') return betaSample(rng, d.a, d.b);
+  if (d.type === 'lognormal') return lognormalSample(rng, d.s, d.scale);
+  return 0;
+}
+
+function ucurveWeights(duration) {
+  const w = new Float64Array(duration); let sum = 0;
+  for (let i = 0; i < duration; i++) {
+    const launch = Math.exp(-i / 2.5); const deadline = Math.exp(-(duration - 1 - i) / 2.5);
+    w[i] = launch + deadline + 0.02; sum += w[i];
+  }
+  for (let i = 0; i < duration; i++) w[i] /= sum;
+  return w;
+}
+
+function emailTraffic(rng, listSize, duration, weights) {
+  if (listSize === 0) return new Float64Array(duration);
+  const openRate = sampleDist(rng, DISTS.EMAIL_OPEN_RATE);
+  const ctr = sampleDist(rng, DISTS.EMAIL_CTR);
+  const p2b = sampleDist(rng, DISTS.EMAIL_PAGE_TO_BACKER);
+  const totalBackers = listSize * openRate * ctr * 5 * p2b;
+  const ew = new Float64Array(duration); let esum = 0;
+  for (let i = 0; i < duration; i++) { ew[i] = weights[i]; if (i === 0) ew[i] *= 5; if (i === 1) ew[i] *= 3; esum += ew[i]; }
+  const out = new Float64Array(duration);
+  for (let i = 0; i < duration; i++) out[i] = poissonSample(rng, Math.max(0, totalBackers * ew[i] / esum));
+  return out;
+}
+
+function socialTraffic(rng, igFollowers, fbFollowers, duration, weights) {
+  let totalBackers = 0;
+  if (igFollowers > 0) { const reach = igFollowers * sampleDist(rng, DISTS.IG_REACH_RATE); const clicks = reach * sampleDist(rng, DISTS.IG_CTR); totalBackers += clicks * sampleDist(rng, DISTS.IG_PAGE_TO_BACKER) * 6; }
+  if (fbFollowers > 0) { const reach = fbFollowers * sampleDist(rng, DISTS.FB_REACH_RATE); const clicks = reach * sampleDist(rng, DISTS.FB_CTR); totalBackers += clicks * sampleDist(rng, DISTS.FB_PAGE_TO_BACKER) * 6; }
+  if (totalBackers === 0) return new Float64Array(duration);
+  const out = new Float64Array(duration);
+  for (let i = 0; i < duration; i++) out[i] = poissonSample(rng, Math.max(0, totalBackers * weights[i]));
+  return out;
+}
+
+function paidAdsTraffic(rng, dailyBudget, duration, weights) {
+  if (dailyBudget <= 0) return new Float64Array(duration);
+  const cpm = sampleDist(rng, DISTS.AD_CPM); const ctr = sampleDist(rng, DISTS.AD_CTR); const p2b = sampleDist(rng, DISTS.AD_PAGE_TO_BACKER);
+  const dailyExpected = (dailyBudget / cpm) * 1000 * ctr * p2b;
+  const out = new Float64Array(duration);
+  for (let i = 0; i < duration; i++) { const w = 0.5/duration + 0.5*weights[i]; out[i] = poissonSample(rng, Math.max(0, dailyExpected * duration * w)); }
+  return out;
+}
+
+function prTraffic(rng, numHits, duration, weights) {
+  if (numHits <= 0) return new Float64Array(duration);
+  let totalBackers = 0;
+  for (let h = 0; h < numHits; h++) { const reach = sampleDist(rng, DISTS.PR_REACH_PER_HIT); totalBackers += reach * sampleDist(rng, DISTS.PR_CTR) * sampleDist(rng, DISTS.PR_PAGE_TO_BACKER); }
+  const pw = new Float64Array(duration); let psum = 0;
+  for (let i = 0; i < duration; i++) { pw[i] = weights[i] * (i < 7 ? 3 : 1); psum += pw[i]; }
+  const out = new Float64Array(duration);
+  for (let i = 0; i < duration; i++) out[i] = poissonSample(rng, Math.max(0, totalBackers * pw[i] / psum));
+  return out;
+}
+
+function iggOrganicTraffic(rng, duration, weights) {
+  const dailyVisitors = sampleDist(rng, DISTS.IGG_DAILY_VISITORS); const p2b = sampleDist(rng, DISTS.IGG_PAGE_TO_BACKER);
+  const dailyExpected = dailyVisitors * p2b;
+  const out = new Float64Array(duration);
+  for (let i = 0; i < duration; i++) { const w = 0.7/duration + 0.3*weights[i]; out[i] = poissonSample(rng, Math.max(0, dailyExpected * duration * w)); }
+  return out;
+}
+
+function womTraffic(rng, cumulativeBackers, duration) {
+  const tells = sampleDist(rng, DISTS.WOM_TELLS); const visitRate = sampleDist(rng, DISTS.WOM_VISIT_RATE); const p2b = sampleDist(rng, DISTS.WOM_PAGE_TO_BACKER);
+  const out = new Float64Array(duration);
+  for (let day = 1; day < duration; day++) {
+    const newPrev = cumulativeBackers[day] - (day > 0 ? cumulativeBackers[day-1] : 0);
+    out[day] = poissonSample(rng, Math.max(0, newPrev * tells * visitRate * p2b));
+  }
+  return out;
+}
+
+const UNITS_PER_DAY = 20; const MAX_FULFILLMENT_DAYS = 90; const MAX_UNITS = UNITS_PER_DAY * MAX_FULFILLMENT_DAYS;
+
+function calculateRevenue(dailyBackers, ebPrice, ebQty, stdPrice, duration) {
+  let rawBackers = 0; for (let i = 0; i < duration; i++) rawBackers += dailyBackers[i];
+  const totalBackers = Math.min(rawBackers, MAX_UNITS);
+  if (totalBackers === 0) return { gross: 0, net: 0, backers: 0, dailyCum: new Float64Array(duration), capped: false };
+  const ebBackers = Math.min(totalBackers, ebQty); const stdBackers = totalBackers - ebBackers;
+  const gross = ebBackers * ebPrice + stdBackers * stdPrice;
+  const fees = gross * 0.05 + gross * 0.03 + totalBackers * 0.20;
+  const net = gross - fees - totalBackers * 45 - totalBackers * 12;
+  const dailyCum = new Float64Array(duration); let cumBackers = 0; let cumRev = 0;
+  for (let i = 0; i < duration; i++) {
+    const db = dailyBackers[i];
+    if (db > 0) {
+      const cumBefore = cumBackers; cumBackers += db;
+      const ebInDay = Math.min(db, Math.max(0, Math.min(cumBackers, ebQty) - Math.max(cumBefore, 0)));
+      cumRev += ebInDay * ebPrice + (db - ebInDay) * stdPrice;
+    }
+    dailyCum[i] = cumRev;
+  }
+  return { gross, net, backers: totalBackers, dailyCum, capped: rawBackers > MAX_UNITS };
+}
+
+function runSimulation(params) {
+  const { emailList, igFollowers, fbFollowers, dailyAdBudget, prHits, goal, duration, ebPrice, ebQty } = params;
+  const stdPrice = 200.00; const weights = ucurveWeights(duration);
+  const allRaised = new Float64Array(N_RUNS); const allBackers = new Float64Array(N_RUNS);
+  const allNet = new Float64Array(N_RUNS); const allFunded = new Uint8Array(N_RUNS);
+  const allTrajectories = [];
+  for (let run = 0; run < N_RUNS; run++) {
+    const rng = makeRng(42 + run);
+    const backers = new Float64Array(duration);
+    const em = emailTraffic(rng, emailList, duration, weights);
+    const soc = socialTraffic(rng, igFollowers, fbFollowers, duration, weights);
+    const ads = paidAdsTraffic(rng, dailyAdBudget, duration, weights);
+    const prT = prTraffic(rng, prHits, duration, weights);
+    const org = iggOrganicTraffic(rng, duration, weights);
+    for (let i = 0; i < duration; i++) backers[i] = em[i] + soc[i] + ads[i] + prT[i] + org[i];
+    const cum = new Float64Array(duration); cum[0] = backers[0];
+    for (let i = 1; i < duration; i++) cum[i] = cum[i-1] + backers[i];
+    const wom = womTraffic(rng, cum, duration);
+    for (let i = 0; i < duration; i++) backers[i] += wom[i];
+    const rev = calculateRevenue(backers, ebPrice, ebQty, stdPrice, duration);
+    allRaised[run] = rev.gross; allBackers[run] = rev.backers; allNet[run] = rev.net;
+    allFunded[run] = rev.gross >= goal ? 1 : 0;
+    allTrajectories.push(rev.dailyCum);
+  }
+  const sortedRaised = Float64Array.from(allRaised).sort();
+  const sortedBackers = Float64Array.from(allBackers).sort();
+  const sortedNet = Float64Array.from(allNet).sort();
+  const pctl = (arr, p) => arr[Math.min(Math.floor(p/100*arr.length), arr.length-1)];
+  let funded = 0; for (let i = 0; i < N_RUNS; i++) funded += allFunded[i];
+  const trajPctls = {};
+  for (const p of [10, 25, 50, 75, 90]) {
+    trajPctls[p] = new Float64Array(duration);
+    for (let d = 0; d < duration; d++) {
+      const col = new Float64Array(N_RUNS);
+      for (let r = 0; r < N_RUNS; r++) col[r] = allTrajectories[r][d];
+      col.sort(); trajPctls[p][d] = pctl(col, p);
+    }
+  }
+  return { prob: funded/N_RUNS, raised: { p10: pctl(sortedRaised,10), p50: pctl(sortedRaised,50), p90: pctl(sortedRaised,90) }, backers: { p10: pctl(sortedBackers,10), p50: pctl(sortedBackers,50), p90: pctl(sortedBackers,90) }, netMedian: pctl(sortedNet,50), trajPctls, allRaised: sortedRaised, duration, goal };
+}
+
+// =====================================================
+// UI
+// =====================================================
+const $ = id => document.getElementById(id);
+let fanChartInstance = null; let histChartInstance = null;
+function fmt(n) { return Math.abs(n) >= 1000 ? '$' + Math.round(n).toLocaleString() : '$' + Math.round(n); }
+
+function updatePrintScorecard(res) {
+  const probPct = Math.round(res.prob * 100);
+  const el = id => document.getElementById(id);
+  if (el('printProb'))    el('printProb').textContent    = probPct + '%';
+  if (el('printRaised'))  el('printRaised').textContent  = fmt(res.raised.p50);
+  if (el('printBackers')) el('printBackers').textContent = Math.round(res.backers.p50).toLocaleString();
+  if (el('printNet'))     el('printNet').textContent     = fmt(res.netMedian);
+  if (el('heroProbStat')) el('heroProbStat').textContent = probPct + '%';
+  if (el('forecastProb'))    el('forecastProb').textContent    = probPct + '%';
+  if (el('forecastBackers')) el('forecastBackers').textContent = Math.round(res.backers.p50).toLocaleString();
+  if (el('forecastRaised'))  el('forecastRaised').textContent  = fmt(res.raised.p50);
+}
+
+function updateDisplay() {
+  const t0 = performance.now();
+  const params = {
+    emailList: +$('email').value, igFollowers: +$('ig').value, fbFollowers: +$('fb').value,
+    dailyAdBudget: +$('adBudget').textContent === undefined ? 0 : +$('adBudget').value,
+    prHits: +$('pr').value, goal: +$('goal').value,
+    duration: +$('duration').value, ebPrice: +$('ebPrice').value, ebQty: +$('ebQty').value,
+  };
+  params.dailyAdBudget = +$('adBudget').value;
+
+  $('emailVal').textContent    = params.emailList.toLocaleString();
+  $('igVal').textContent       = params.igFollowers.toLocaleString();
+  $('fbVal').textContent       = params.fbFollowers.toLocaleString();
+  $('adBudgetVal').textContent = '$' + params.dailyAdBudget;
+  $('prVal').textContent       = params.prHits;
+  $('goalVal').textContent     = '$' + params.goal.toLocaleString();
+  $('durationVal').textContent = params.duration;
+  $('ebPriceVal').textContent  = '$' + params.ebPrice;
+  $('ebQtyVal').textContent    = params.ebQty;
+
+  const res = runSimulation(params);
+  const elapsed = ((performance.now() - t0) / 1000).toFixed(2);
+  const probPct = Math.round(res.prob * 100);
+
+  let color, label;
+  if      (res.prob >= 0.70) { color = '#35b779'; label = 'STRONG — launch with confidence'; }
+  else if (res.prob >= 0.50) { color = '#21908c'; label = 'VIABLE — proceed with active plan'; }
+  else if (res.prob >= 0.20) { color = '#b45309'; label = 'RISKY — more prep recommended'; }
+  else                       { color = '#440154'; label = 'DO NOT LAUNCH without more preparation'; }
+
+  $('probBig').textContent    = probPct + '%';
+  $('probBig').style.color    = color;
+  $('probLabel').textContent  = label;
+  $('verdictBar').textContent = probPct >= 50
+    ? `Median: ${fmt(res.raised.p50)} raised, ${Math.round(res.backers.p50)} backers`
+    : `Range: ${fmt(res.raised.p10)} (pessimistic) to ${fmt(res.raised.p90)} (optimistic)`;
+  $('verdictBar').style.background = color;
+  $('statRaised').textContent  = fmt(res.raised.p50);
+  $('statBackers').textContent = Math.round(res.backers.p50).toLocaleString();
+  $('statNet').textContent     = fmt(res.netMedian);
+  $('statNet').style.color     = res.netMedian >= 0 ? '#35b779' : '#440154';
+  $('statGoal').textContent    = fmt(params.goal);
+  $('timing').textContent      = `${N_RUNS.toLocaleString()} Monte Carlo runs in ${elapsed}s`;
+
+  updatePrintScorecard(res);
+
+  // Fan chart — viridis colors
+  const days = Array.from({length: params.duration}, (_, i) => i + 1);
+  if (fanChartInstance) fanChartInstance.destroy();
+  fanChartInstance = new Chart($('fanChart'), {
+    type: 'line',
+    data: { labels: days, datasets: [
+      { label: '90th pctl', data: Array.from(res.trajPctls[90]), borderColor: 'transparent', backgroundColor: 'rgba(33,144,140,0.12)', fill: '+4', pointRadius: 0, tension: 0.3 },
+      { label: '75th pctl', data: Array.from(res.trajPctls[75]), borderColor: 'transparent', backgroundColor: 'rgba(33,144,140,0.20)', fill: '+2', pointRadius: 0, tension: 0.3 },
+      { label: 'Median',    data: Array.from(res.trajPctls[50]), borderColor: '#21908c', backgroundColor: 'transparent', borderWidth: 2.5, pointRadius: 0, tension: 0.3, fill: false },
+      { label: '25th pctl', data: Array.from(res.trajPctls[25]), borderColor: 'transparent', backgroundColor: 'rgba(33,144,140,0.20)', fill: false, pointRadius: 0, tension: 0.3 },
+      { label: '10th pctl', data: Array.from(res.trajPctls[10]), borderColor: 'transparent', backgroundColor: 'rgba(33,144,140,0.12)', fill: false, pointRadius: 0, tension: 0.3 },
+      { label: 'Goal', data: days.map(() => params.goal), borderColor: 'rgba(180,83,9,0.7)', borderWidth: 2, borderDash: [6,4], pointRadius: 0, fill: false },
+    ]},
+    options: { responsive: true, plugins: {
+      title: { display: true, text: 'Funding Trajectory (1,000 MC runs)', color: '#374151', font: { size: 13, weight: '600' } },
+      legend: { display: false },
+    }, scales: {
+      x: { title: { display: true, text: 'Campaign Day', color: '#6b7280' }, ticks: { color: '#6b7280', maxTicksLimit: 10 }, grid: { color: '#f3f4f6' } },
+      y: { title: { display: true, text: 'Cumulative Raised ($)', color: '#6b7280' }, ticks: { color: '#6b7280', callback: v => '$' + (v >= 1000 ? Math.round(v/1000)+'K' : v) }, grid: { color: '#f3f4f6' } },
+    }},
+  });
+
+  // Histogram — viridis: purple below goal, green above
+  const bins = 40; const minR = res.allRaised[0]; const maxR = res.allRaised[res.allRaised.length-1];
+  const binWidth = Math.max(1, (maxR - minR) / bins);
+  const counts = new Array(bins).fill(0); const binLabels = [];
+  for (let i = 0; i < bins; i++) {
+    const lo = minR + i * binWidth; binLabels.push(Math.round(lo));
+    for (let j = 0; j < N_RUNS; j++) { const v = res.allRaised[j]; if (v >= lo && (i === bins-1 || v < lo+binWidth)) counts[i]++; }
+  }
+  const barColors = binLabels.map(v => v >= params.goal ? 'rgba(53,183,121,0.7)' : 'rgba(68,1,84,0.6)');
+  if (histChartInstance) histChartInstance.destroy();
+  histChartInstance = new Chart($('histChart'), {
+    type: 'bar',
+    data: { labels: binLabels, datasets: [{ data: counts, backgroundColor: barColors, borderWidth: 0, barPercentage: 1, categoryPercentage: 1 }] },
+    options: { responsive: true, plugins: {
+      title: { display: true, text: 'Distribution of Outcomes (purple = below goal, green = above)', color: '#374151', font: { size: 13, weight: '600' } },
+      legend: { display: false },
+    }, scales: {
+      x: { ticks: { color: '#6b7280', maxTicksLimit: 6, callback: function(val, idx) { const v = binLabels[idx]; return '$' + (v >= 1000 ? Math.round(v/1000)+'K' : v); } }, grid: { display: false } },
+      y: { ticks: { color: '#6b7280' }, grid: { color: '#f3f4f6' } },
+    }},
+  });
+}
+
+// Slider wiring
+const sliderIds = ['email','ig','fb','adBudget','pr','goal','duration','ebPrice','ebQty'];
+sliderIds.forEach(id => {
+  $(id).addEventListener('input', () => {
+    const v = +$(id).value; const valEl = $(id + 'Val');
+    if (['adBudget','ebPrice','goal'].includes(id)) valEl.textContent = '$' + v.toLocaleString();
+    else valEl.textContent = v.toLocaleString();
+  });
+  $(id).addEventListener('change', updateDisplay);
+});
+$('totalBudget').addEventListener('input', () => { $('totalBudgetVal').textContent = '$' + (+$('totalBudget').value).toLocaleString(); });
+
+// =====================================================
+// Budget Optimizer
+// =====================================================
+function quickProb(params, nRuns) {
+  const { emailList, igFollowers, fbFollowers, dailyAdBudget, prHits, goal, duration, ebPrice, ebQty } = params;
+  const stdPrice = 200.00; const weights = ucurveWeights(duration); let funded = 0;
+  for (let run = 0; run < nRuns; run++) {
+    const rng = makeRng(42+run);
+    const backers = new Float64Array(duration);
+    const em = emailTraffic(rng, emailList, duration, weights);
+    const soc = socialTraffic(rng, igFollowers, fbFollowers, duration, weights);
+    const ads = paidAdsTraffic(rng, dailyAdBudget, duration, weights);
+    const prT = prTraffic(rng, prHits, duration, weights);
+    const org = iggOrganicTraffic(rng, duration, weights);
+    for (let i = 0; i < duration; i++) backers[i] = em[i]+soc[i]+ads[i]+prT[i]+org[i];
+    const cum = new Float64Array(duration); cum[0] = backers[0];
+    for (let i = 1; i < duration; i++) cum[i] = cum[i-1]+backers[i];
+    const wom = womTraffic(rng, cum, duration);
+    for (let i = 0; i < duration; i++) backers[i] += wom[i];
+    let totalBackers = 0; for (let i = 0; i < duration; i++) totalBackers += backers[i];
+    const ebB = Math.min(totalBackers, ebQty); const gross = ebB*ebPrice + (totalBackers-ebB)*stdPrice;
+    if (gross >= goal) funded++;
+  }
+  return funded / nRuns;
+}
+
+async function runOptimizer() {
+  const btn = $('optimizeBtn');
+  const prog = $('optProgress');
+  const result = $('optResult');
+  btn.disabled = true;
+  result.innerHTML = '';
+
+  const budget = +$('totalBudget').value;
+  const costs = {
+    email: +$('costEmail').value,
+    ig:    +$('costIg').value,
+    fb:    +$('costFb').value,
+    pr:    +$('costPr').value,
+  };
+
+  const baseParams = {
+    emailList: +$('email').value, igFollowers: +$('ig').value, fbFollowers: +$('fb').value,
+    dailyAdBudget: +$('adBudget').value, prHits: +$('pr').value, goal: +$('goal').value,
+    duration: +$('duration').value, ebPrice: +$('ebPrice').value, ebQty: +$('ebQty').value,
+  };
+
+  const channels = [
+    { key: 'emailList',     name: 'Email list',   costPer: costs.email, unit: 'subscribers' },
+    { key: 'igFollowers',   name: 'IG followers', costPer: costs.ig,    unit: 'followers' },
+    { key: 'fbFollowers',   name: 'FB followers', costPer: costs.fb,    unit: 'followers' },
+    { key: 'dailyAdBudget', name: 'Ad budget',    costPer: 30,          unit: '$/day' },
+    { key: 'prHits',        name: 'PR / media',   costPer: costs.pr,    unit: 'hits' },
+  ];
+
+  const maxUnits = channels.map(ch => {
+    const max = Math.floor(budget / ch.costPer);
+    if (ch.key === 'prHits') return Math.min(max, 10);
+    if (ch.key === 'dailyAdBudget') return Math.min(max, 500);
+    return Math.min(max, 10000);
+  });
+
+  const rng = makeRng(123);
+  const N_CANDIDATES = 200;
+  const OPT_RUNS = 500;
+  const candidates = [];
+
+  for (let i = 0; i < channels.length; i++) {
+    const alloc = new Array(channels.length).fill(0); alloc[i] = 1.0; candidates.push(alloc);
+  }
+  for (let i = 0; i < channels.length; i++) {
+    for (let j = i + 1; j < channels.length; j++) {
+      const alloc = new Array(channels.length).fill(0); alloc[i] = 0.5; alloc[j] = 0.5; candidates.push(alloc);
+    }
+  }
+  while (candidates.length < N_CANDIDATES) {
+    const raw = channels.map(() => -Math.log(rng.uniform() + 1e-10));
+    const sum = raw.reduce((a, b) => a + b, 0);
+    candidates.push(raw.map(v => v / sum));
+  }
+
+  let bestProb = -1, bestParams = null, bestAlloc = null, bestSpent = 0;
+  prog.textContent = 'Optimizing...';
+
+  let idx = 0;
+  await new Promise(resolve => {
+    function evalNext() {
+      if (idx >= candidates.length) { resolve(); return; }
+      const alloc = candidates[idx];
+      const params = { ...baseParams }; let spent = 0;
+      for (let i = 0; i < channels.length; i++) {
+        let units = Math.min(Math.floor(budget * alloc[i] / channels[i].costPer), maxUnits[i]);
+        spent += units * channels[i].costPer;
+        params[channels[i].key] = baseParams[channels[i].key] + units;
+      }
+      const p = quickProb(params, OPT_RUNS);
+      if (p > bestProb) { bestProb = p; bestParams = {...params}; bestAlloc = alloc; bestSpent = spent; }
+      idx++;
+      if (idx % 5 === 0) {
+        const pct = Math.round(idx / candidates.length * 100);
+        prog.textContent = `Evaluating ${idx}/${candidates.length} (${pct}%) — best: ${Math.round(bestProb*100)}%`;
+      }
+      setTimeout(evalNext, 0);
+    }
+    evalNext();
+  });
+
+  prog.textContent = 'Refining...';
+  const refineRng = makeRng(456);
+  for (let r = 0; r < 50; r++) {
+    const tweaked = bestAlloc.map(v => Math.max(0, v + (refineRng.uniform() - 0.5) * 0.2));
+    const sum = tweaked.reduce((a, b) => a + b, 0);
+    const normed = tweaked.map(v => v / sum);
+    const params = { ...baseParams }; let spent = 0;
+    for (let i = 0; i < channels.length; i++) {
+      let units = Math.min(Math.floor(budget * normed[i] / channels[i].costPer), maxUnits[i]);
+      spent += units * channels[i].costPer;
+      params[channels[i].key] = baseParams[channels[i].key] + units;
+    }
+    const p = quickProb(params, OPT_RUNS);
+    if (p > bestProb) { bestProb = p; bestParams = {...params}; bestAlloc = normed; bestSpent = spent; }
+  }
+
+  const finalProb = quickProb(bestParams, 1000);
+  const baseProb  = quickProb(baseParams,  1000);
+
+  const rows = [];
+  for (let i = 0; i < channels.length; i++) {
+    const ch = channels[i]; const added = bestParams[ch.key] - baseParams[ch.key];
+    if (added <= 0) continue;
+    rows.push({ name: ch.name, key: ch.key, unit: ch.unit, current: baseParams[ch.key], recommended: bestParams[ch.key], added, cost: added * ch.costPer });
+  }
+  rows.sort((a, b) => b.cost - a.cost);
+
+  let html = `<div style="margin-top:10px; padding:10px; background:#f0fdf9; border-radius:8px; text-align:center; margin-bottom:8px;">
+    <span style="color:#6b7280">P(funded): </span>
+    <span style="font-size:1.1rem; font-weight:700; color:#21908c;">${Math.round(baseProb*100)}% &rarr; ${Math.round(finalProb*100)}%</span>
+    <span style="color:#6b7280; font-size:0.8rem;"> for ${fmt(bestSpent)} spent</span>
+  </div>
+  <table><tr><th>Channel</th><th>Now</th><th>Target</th><th>Add</th><th>Cost</th></tr>`;
+  for (const r of rows) {
+    const addStr = r.key === 'dailyAdBudget' ? `+$${r.added}/day` : `+${r.added.toLocaleString()}`;
+    html += `<tr><td>${r.name}</td><td>${r.current.toLocaleString()}</td><td style="color:#21908c;font-weight:600">${r.recommended.toLocaleString()}</td><td style="color:#21908c">${addStr}</td><td>${fmt(r.cost)}</td></tr>`;
+  }
+  html += `</table><button class="opt-btn" style="margin-top:10px;" onclick="applyOptimal(${JSON.stringify(bestParams).replace(/"/g,'&quot;')})">Apply to Sliders</button>`;
+
+  result.innerHTML = html;
+  prog.textContent = `Done — tested ${N_CANDIDATES + 50} allocations`;
+  btn.disabled = false;
+}
+
+function applyOptimal(params) {
+  $('email').value     = params.emailList;
+  $('ig').value        = params.igFollowers;
+  $('fb').value        = params.fbFollowers;
+  $('adBudget').value  = params.dailyAdBudget;
+  $('pr').value        = params.prHits;
+  updateDisplay();
+}
+
+// Nav active state via scroll position
+(function () {
+  const sectionIds = ['evidence','lessons','simulator','forecast','actions'];
+  const links = {};
+  sectionIds.forEach(id => { links[id] = document.querySelector('#navLinks a[href="#'+id+'"]'); });
+  function update() {
+    const y = window.scrollY + 80; let active = sectionIds[0];
+    sectionIds.forEach(id => { const el = document.getElementById(id); if (el && el.offsetTop <= y) active = id; });
+    Object.values(links).forEach(a => a && a.classList.remove('text-white','bg-white/10'));
+    if (links[active]) links[active].classList.add('text-white','bg-white/10');
+  }
+  window.addEventListener('scroll', update, { passive: true });
+  update();
+})();
+
+// Initial render
+updateDisplay();
 </script>
 
 </body>

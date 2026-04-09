@@ -344,28 +344,28 @@ function poissonSample(rng, lambda) {
   return k - 1;
 }
 
-// -- Distribution definitions (CMA-ES calibrated 2026-04-07, loss=2.52) --
+// -- Distribution definitions (CMA-ES calibrated 2026-04-09, loss=2.57) --
 const DISTS = {
-  EMAIL_OPEN_RATE:       { type: 'beta', a: 23.22, b: 76.78 },
-  EMAIL_CTR:             { type: 'beta', a: 19.47, b: 80.53 },
-  EMAIL_PAGE_TO_BACKER:  { type: 'beta', a: 2.09, b: 47.91 },
-  IG_REACH_RATE:         { type: 'beta', a: 9.67, b: 90.33 },
-  IG_CTR:                { type: 'beta', a: 0.75, b: 99.25 },
-  IG_PAGE_TO_BACKER:     { type: 'beta', a: 9.31, b: 90.69 },
-  FB_REACH_RATE:         { type: 'beta', a: 2.75, b: 97.25 },
-  FB_CTR:                { type: 'beta', a: 2.20, b: 97.80 },
-  FB_PAGE_TO_BACKER:     { type: 'beta', a: 0.62, b: 99.38 },
-  AD_CPM:                { type: 'lognormal', s: 0.4, scale: 28.96 },
-  AD_CTR:                { type: 'beta', a: 0.82, b: 99.18 },
-  AD_PAGE_TO_BACKER:     { type: 'beta', a: 1.58, b: 98.42 },
-  PR_REACH_PER_HIT:      { type: 'lognormal', s: 1.0, scale: 3117 },
-  PR_CTR:                { type: 'beta', a: 0.36, b: 99.64 },
-  PR_PAGE_TO_BACKER:     { type: 'beta', a: 3.44, b: 96.56 },
-  IGG_DAILY_VISITORS:    { type: 'lognormal', s: 0.5, scale: 1845 },
-  IGG_PAGE_TO_BACKER:    { type: 'beta', a: 0.20, b: 99.80 },
-  WOM_TELLS:             { type: 'lognormal', s: 0.5, scale: 0.86 },
-  WOM_VISIT_RATE:        { type: 'beta', a: 6.26, b: 93.74 },
-  WOM_PAGE_TO_BACKER:    { type: 'beta', a: 8.13, b: 91.87 },
+  EMAIL_OPEN_RATE:      { type: 'beta',      a: 16.3599, b: 23.6401 },
+  EMAIL_CTR:            { type: 'beta',      a:  5.9292, b: 24.0708 },
+  EMAIL_PAGE_TO_BACKER: { type: 'beta',      a:  0.3053, b: 19.6947 },
+  IG_REACH_RATE:        { type: 'beta',      a:  0.6774, b: 99.3226 },
+  IG_CTR:               { type: 'beta',      a:  0.0793, b: 24.9207 },
+  IG_PAGE_TO_BACKER:    { type: 'beta',      a:  0.4986, b: 39.5014 },
+  FB_REACH_RATE:        { type: 'beta',      a:  1.2433, b: 78.7567 },
+  FB_CTR:               { type: 'beta',      a:  0.0264, b: 49.9736 },
+  FB_PAGE_TO_BACKER:    { type: 'beta',      a:  0.3001, b: 39.6999 },
+  AD_CPM:               { type: 'lognormal', s:  0.4,    scale: 29.59 },
+  AD_CTR:               { type: 'beta',      a:  0.3282, b: 99.6718 },
+  AD_PAGE_TO_BACKER:    { type: 'beta',      a:  0.3995, b: 49.6005 },
+  PR_REACH_PER_HIT:     { type: 'lognormal', s:  1.0,    scale: 3117 },
+  PR_CTR:               { type: 'beta',      a:  0.8647, b: 99.1353 },
+  PR_PAGE_TO_BACKER:    { type: 'beta',      a:  3.44,   b: 96.56 },
+  IGG_DAILY_VISITORS:   { type: 'lognormal', s:  0.5,    scale: 79.57 },
+  IGG_PAGE_TO_BACKER:   { type: 'beta',      a:  0.20,   b: 99.80 },
+  WOM_TELLS:            { type: 'lognormal', s:  0.5,    scale: 0.24 },
+  WOM_VISIT_RATE:       { type: 'beta',      a:  1.0,    b: 99.0 },
+  WOM_PAGE_TO_BACKER:   { type: 'beta',      a:  8.13,   b: 91.87 },
 };
 
 function sampleDist(rng, d) {
