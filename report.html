@@ -51,6 +51,16 @@
 .stat-card:nth-child(4) { border-left: 3px solid var(--v-green); }
 .stat-card:nth-child(4) .n { color: var(--v-green); }
 
+/* Hero readiness bars */
+.rb-row { display:grid; grid-template-columns:170px 1fr 130px; align-items:center; gap:0.6rem; margin-bottom:0.4rem; }
+.rb-lbl  { font-size:0.72rem; color:rgba(255,255,255,0.6); text-align:right; }
+.rb-track{ background:rgba(53,183,121,0.25); border-radius:99px; height:14px; overflow:hidden; }
+.rb-fill { height:100%; background:#fde725; border-radius:99px; min-width:3px; }
+.rb-nums { font-size:0.68rem; font-family:monospace; }
+.rb-bc   { color:#fde725; }
+.rb-sep  { color:rgba(255,255,255,0.2); margin:0 0.2rem; }
+.rb-bench{ color:#35b779; }
+
 /* Callout boxes */
 .callout {
   border-left: 3px solid var(--v-teal);
@@ -222,8 +232,53 @@ td.em { font-weight: 600; color: #111; }
     <div class="font-mono text-xs tracking-widest text-[#21908c] uppercase mb-3">Market Analysis Report · April 2026</div>
     <h1 class="text-3xl font-bold text-white mb-2">CLOAK by BossCovers<br><span class="text-[#21908c]">Campaign Readiness vs. Median Funded Campaign</span></h1>
     <p class="text-sm text-white/50 mb-6">Simulator result: <span class="text-[#fde725] font-bold" id="heroProbStat">—</span> probability of funding · 14,648 comparable campaigns · industry benchmarks</p>
-    <canvas id="heroChart" height="180" style="width:100%; max-height:220px;"></canvas>
-    <p class="text-xs text-white/30 mt-3 font-mono">Each bar shows BossCovers' current value as a % of the median funded campaign benchmark. Benchmark = 100%.</p>
+    <!-- Readiness progress bars -->
+    <div style="margin-top:0.25rem;">
+      <div style="display:grid; grid-template-columns:170px 1fr 130px; align-items:center; gap:0.6rem; margin-bottom:0.45rem;">
+        <div style="font-size:0.65rem; color:rgba(255,255,255,0.35); text-align:right; font-family:monospace; text-transform:uppercase; letter-spacing:.05em;">Dimension</div>
+        <div style="display:flex; justify-content:space-between; font-size:0.6rem; color:rgba(255,255,255,0.25); font-family:monospace; padding:0 2px;">
+          <span>0%</span><span>50%</span><span>100% benchmark</span>
+        </div>
+        <div></div>
+      </div>
+      <!-- Email list: 50 / 1,000 = 5% -->
+      <div class="rb-row">
+        <div class="rb-lbl">Email subscribers</div>
+        <div class="rb-track"><div class="rb-fill" style="width:5%"></div></div>
+        <div class="rb-nums"><span class="rb-bc">50</span><span class="rb-sep">/</span><span class="rb-bench">1,000</span></div>
+      </div>
+      <!-- IG + FB: 193 / 5,000 = 3.9% -->
+      <div class="rb-row">
+        <div class="rb-lbl">IG + FB followers</div>
+        <div class="rb-track"><div class="rb-fill" style="width:3.9%"></div></div>
+        <div class="rb-nums"><span class="rb-bc">193</span><span class="rb-sep">/</span><span class="rb-bench">5,000</span></div>
+      </div>
+      <!-- Ad budget: $0 / $1,500/mo = 0% -->
+      <div class="rb-row">
+        <div class="rb-lbl">Monthly ad budget</div>
+        <div class="rb-track"><div class="rb-fill" style="width:0.5%"></div></div>
+        <div class="rb-nums"><span class="rb-bc">$0</span><span class="rb-sep">/</span><span class="rb-bench">$1,500</span></div>
+      </div>
+      <!-- Pre-launch days: 0 / 60 = 0% -->
+      <div class="rb-row">
+        <div class="rb-lbl">Pre-launch runway</div>
+        <div class="rb-track"><div class="rb-fill" style="width:0.5%"></div></div>
+        <div class="rb-nums"><span class="rb-bc">0 days</span><span class="rb-sep">/</span><span class="rb-bench">60 days</span></div>
+      </div>
+      <!-- Reservation list: 0 / 300 = 0% -->
+      <div class="rb-row">
+        <div class="rb-lbl">Reservation list</div>
+        <div class="rb-track"><div class="rb-fill" style="width:0.5%"></div></div>
+        <div class="rb-nums"><span class="rb-bc">0</span><span class="rb-sep">/</span><span class="rb-bench">300</span></div>
+      </div>
+      <!-- Product readiness: 95 / 100 = 95% -->
+      <div class="rb-row">
+        <div class="rb-lbl">Product readiness</div>
+        <div class="rb-track"><div class="rb-fill" style="width:95%"></div></div>
+        <div class="rb-nums"><span class="rb-bc">Tooling done</span><span class="rb-sep">/</span><span class="rb-bench">Ready</span></div>
+      </div>
+    </div>
+    <p class="text-xs text-white/25 mt-3 font-mono">BossCovers <span style="color:#fde725">■</span> vs median funded campaign <span style="color:#35b779">■</span></p>
   </div>
 </header>
 
@@ -523,18 +578,18 @@ td.em { font-weight: 600; color: #111; }
     <div class="grid md:grid-cols-2 gap-4 no-print">
       <div class="sim-card">
         <div class="sim-section-title">Audience</div>
-        <div class="slider-row"><label>Email list</label><input type="range" id="email" min="0" max="10000" step="50" value="50"><span class="slider-val" id="emailVal">50</span></div>
-        <div class="slider-row"><label>IG followers</label><input type="range" id="ig" min="0" max="10000" step="50" value="124"><span class="slider-val" id="igVal">124</span></div>
-        <div class="slider-row"><label>FB followers</label><input type="range" id="fb" min="0" max="10000" step="50" value="69"><span class="slider-val" id="fbVal">69</span></div>
-        <div class="slider-row"><label>Ad budget ($/day)</label><input type="range" id="adBudget" min="0" max="500" step="5" value="0"><span class="slider-val" id="adBudgetVal">$0</span></div>
-        <div class="slider-row"><label>PR / media hits</label><input type="range" id="pr" min="0" max="10" step="1" value="0"><span class="slider-val" id="prVal">0</span></div>
+        <div class="slider-row"><label>Email list</label><input type="range" id="email" min="0" max="50000" step="50" value="50"><span class="slider-val" id="emailVal">50</span></div>
+        <div class="slider-row"><label>IG followers</label><input type="range" id="ig" min="0" max="50000" step="50" value="124"><span class="slider-val" id="igVal">124</span></div>
+        <div class="slider-row"><label>FB followers</label><input type="range" id="fb" min="0" max="50000" step="50" value="69"><span class="slider-val" id="fbVal">69</span></div>
+        <div class="slider-row"><label>Ad budget ($/day)</label><input type="range" id="adBudget" min="0" max="2500" step="5" value="0"><span class="slider-val" id="adBudgetVal">$0</span></div>
+        <div class="slider-row"><label>PR / media hits</label><input type="range" id="pr" min="0" max="50" step="1" value="0"><span class="slider-val" id="prVal">0</span></div>
       </div>
       <div class="sim-card">
         <div class="sim-section-title">Campaign</div>
         <div class="slider-row"><label>Funding goal ($)</label><input type="range" id="goal" min="5000" max="100000" step="1000" value="15000"><span class="slider-val" id="goalVal">$15,000</span></div>
         <div class="slider-row"><label>Duration (days)</label><input type="range" id="duration" min="15" max="60" step="1" value="30"><span class="slider-val" id="durationVal">30</span></div>
         <div class="slider-row"><label>Early bird price ($)</label><input type="range" id="ebPrice" min="99" max="179" step="5" value="149"><span class="slider-val" id="ebPriceVal">$149</span></div>
-        <div class="slider-row"><label>Early bird qty</label><input type="range" id="ebQty" min="0" max="500" step="10" value="50"><span class="slider-val" id="ebQtyVal">50</span></div>
+        <div class="slider-row"><label>Early bird qty</label><input type="range" id="ebQty" min="0" max="2500" step="10" value="50"><span class="slider-val" id="ebQtyVal">50</span></div>
       </div>
     </div>
 
@@ -560,7 +615,7 @@ td.em { font-weight: 600; color: #111; }
     <div class="opt-section no-print">
       <div class="sim-section-title">Budget Optimizer</div>
       <p class="text-xs text-gray-500 mb-3">Set your total pre-launch marketing budget and cost per unit for each channel. The optimizer finds the allocation that maximizes your probability of funding.</p>
-      <div class="slider-row"><label>Total budget ($)</label><input type="range" id="totalBudget" min="0" max="10000" step="100" value="2000"><span class="slider-val" id="totalBudgetVal">$2,000</span></div>
+      <div class="slider-row"><label>Total budget ($)</label><input type="range" id="totalBudget" min="0" max="50000" step="100" value="2000"><span class="slider-val" id="totalBudgetVal">$2,000</span></div>
       <div class="cost-grid">
         <div><label class="text-xs text-gray-600">$/email subscriber</label><input type="number" id="costEmail" value="3" min="0.5" max="20" step="0.5"></div>
         <div><label class="text-xs text-gray-600">$/IG follower</label><input type="number" id="costIg" value="4" min="0.5" max="20" step="0.5"></div>
@@ -1255,86 +1310,6 @@ function applyOptimal(params) {
 // Initial render
 updateDisplay();
 
-// Hero readiness chart
-(function () {
-  // BossCovers current values and benchmarks
-  // Benchmark = typical median-funded hardware/gadget campaign (LaunchBoom, KS data)
-  const dims = [
-    { label: 'Email subscribers',        bc: 50,   bench: 1000,  unit: '',   note: 'LaunchBoom: 1K minimum pre-launch' },
-    { label: 'IG + FB followers',         bc: 193,  bench: 5000,  unit: '',   note: 'Combined organic social reach' },
-    { label: 'Monthly ad budget',         bc: 0,    bench: 1500,  unit: '$',  note: 'Typical pre-launch paid spend' },
-    { label: 'Pre-launch runway (days)',  bc: 0,    bench: 60,    unit: '',   note: 'LaunchBoom 90-day system; 60d minimum' },
-    { label: 'Reservation list',          bc: 0,    bench: 300,   unit: '',   note: '$1-deposit pre-orders before launch' },
-    { label: 'Product readiness',         bc: 95,   bench: 100,   unit: '%',  note: 'Tooling done, ready to manufacture' },
-  ];
-
-  const bcPct  = dims.map(d => d.bench > 0 ? Math.round(d.bc / d.bench * 100) : 0);
-  const labels = dims.map(d => d.label);
-
-  const fmtVal = (d) => d.unit === '$' ? `$${d.bc.toLocaleString()}` : d.bc + (d.unit || '');
-  const fmtBench = (d) => d.unit === '$' ? `$${d.bench.toLocaleString()}` : d.bench + (d.unit || '');
-
-  const ctx = document.getElementById('heroChart').getContext('2d');
-  new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels,
-      datasets: [
-        {
-          label: 'BossCovers today',
-          data: bcPct,
-          backgroundColor: '#fde725',
-          borderRadius: 4,
-          barPercentage: 0.55,
-        },
-        {
-          label: 'Median funded campaign',
-          data: dims.map(() => 100),
-          backgroundColor: '#35b779',
-          borderRadius: 4,
-          barPercentage: 0.55,
-        },
-      ],
-    },
-    options: {
-      indexAxis: 'y',
-      responsive: true,
-      maintainAspectRatio: false,
-      animation: { duration: 600 },
-      scales: {
-        x: {
-          max: 110,
-          grid: { color: 'rgba(255,255,255,0.06)' },
-          ticks: {
-            color: 'rgba(255,255,255,0.35)',
-            font: { family: 'monospace', size: 10 },
-            callback: v => v + '%',
-          },
-          border: { color: 'transparent' },
-        },
-        y: {
-          grid: { display: false },
-          ticks: { color: 'rgba(255,255,255,0.65)', font: { size: 11 } },
-          border: { color: 'transparent' },
-        },
-      },
-      plugins: {
-        legend: {
-          labels: { color: 'rgba(255,255,255,0.55)', font: { size: 11 }, boxWidth: 12, padding: 16 },
-        },
-        tooltip: {
-          callbacks: {
-            label: (ctx) => {
-              const d = dims[ctx.dataIndex];
-              if (ctx.datasetIndex === 0) return ` BossCovers: ${fmtVal(d)} (${bcPct[ctx.dataIndex]}% of benchmark)`;
-              return ` Median funded: ${fmtBench(d)}  ·  ${d.note}`;
-            },
-          },
-        },
-      },
-    },
-  });
-})();
 </script>
 
 </body>
