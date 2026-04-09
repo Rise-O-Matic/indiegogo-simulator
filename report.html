@@ -158,6 +158,13 @@ td.em { font-weight: 600; color: #111; }
 .opt-progress { font-size: 0.75rem; color: var(--v-teal); margin-top: 0.5rem; }
 .opt-result { font-size: 0.82rem; margin-top: 0.75rem; }
 
+/* Funnel rows */
+.funnel-row { display:grid; grid-template-columns:110px 1fr 80px; align-items:center; gap:0.5rem; margin-bottom:0.3rem; font-size:0.75rem; }
+.funnel-label { color:#374151; }
+.funnel-track { background:#e5e7eb; border-radius:3px; height:8px; }
+.funnel-bar { height:100%; border-radius:3px; min-width:2px; }
+.funnel-val { color:#6b7280; font-variant-numeric:tabular-nums; font-size:0.72rem; }
+
 /* Print-only scorecard */
 .print-scorecard { display: none; }
 
@@ -341,6 +348,40 @@ td.em { font-weight: 600; color: #111; }
             <tr><td class="em">PR / media hits</td><td class="mono">0 hits</td><td class="mono">0 (scales ~12/hit)</td><td class="mono">~$5 effective CPA</td></tr>
           </tbody>
         </table>
+      </div>
+    </div>
+
+    <!-- Conversion Funnel Math -->
+    <div class="block">
+      <h3>The Conversion Funnel — Why Small Audiences Produce Near-Zero Backers</h3>
+      <p class="text-sm text-gray-500 mb-4">Each stage multiplies the previous. Small numbers compound into tiny results.</p>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-bottom:1rem;">
+
+        <!-- Email funnel -->
+        <div>
+          <div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--v-teal);font-weight:700;margin-bottom:0.6rem;">Email list · 50 subscribers</div>
+          <div class="funnel-row"><span class="funnel-label">Subscribers</span><div class="funnel-track"><div class="funnel-bar" style="width:100%;background:var(--v-purple)"></div></div><span class="funnel-val">50</span></div>
+          <div class="funnel-row"><span class="funnel-label">Open (42%)</span><div class="funnel-track"><div class="funnel-bar" style="width:42%;background:var(--v-blue)"></div></div><span class="funnel-val">21</span></div>
+          <div class="funnel-row"><span class="funnel-label">Click (10% CTOR)</span><div class="funnel-track"><div class="funnel-bar" style="width:4.2%;background:var(--v-teal)"></div></div><span class="funnel-val">2.1</span></div>
+          <div class="funnel-row"><span class="funnel-label">Back (18%)</span><div class="funnel-track"><div class="funnel-bar" style="width:0.76%;background:var(--v-green)"></div></div><span class="funnel-val">0.38 / email</span></div>
+          <div style="font-size:0.78rem;font-weight:700;color:var(--v-teal);margin-top:0.5rem;padding:0.4rem 0.6rem;background:#f0fdf9;border-radius:4px;">× 5 emails = <strong>~2 backers</strong> <span style="font-weight:400;color:#6b7280">(3.8% of list)</span></div>
+        </div>
+
+        <!-- IG funnel -->
+        <div>
+          <div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--v-teal);font-weight:700;margin-bottom:0.6rem;">Instagram · 124 followers</div>
+          <div class="funnel-row"><span class="funnel-label">Followers</span><div class="funnel-track"><div class="funnel-bar" style="width:100%;background:var(--v-purple)"></div></div><span class="funnel-val">124</span></div>
+          <div class="funnel-row"><span class="funnel-label">Reach (4%/post)</span><div class="funnel-track"><div class="funnel-bar" style="width:4%;background:var(--v-blue)"></div></div><span class="funnel-val">5</span></div>
+          <div class="funnel-row"><span class="funnel-label">Click (0.8%)</span><div class="funnel-track"><div class="funnel-bar" style="width:0.8%;background:var(--v-teal)"></div></div><span class="funnel-val">0.04</span></div>
+          <div class="funnel-row"><span class="funnel-label">Back (1.5%)</span><div class="funnel-track"><div class="funnel-bar" style="width:0.2%;background:var(--v-green)"></div></div><span class="funnel-val">0.001</span></div>
+          <div style="font-size:0.78rem;font-weight:700;color:#b45309;margin-top:0.5rem;padding:0.4rem 0.6rem;background:#fefce8;border-radius:4px;">× 6 posts = <strong>~0 backers</strong> <span style="font-weight:400;color:#6b7280">(0.004% of followers)</span></div>
+        </div>
+      </div>
+
+      <div class="callout flag">
+        <div class="callout-label">Why the simulator shows 0% at default settings</div>
+        <p>At BossCovers' current audience (50 emails, 124 IG, 69 FB, $0 ads) the model expects ~2 backers from all channels combined. You need 75 backers to hit a $15K goal at $200 avg pledge. <strong>The simulator is working correctly.</strong> Drag the sliders to see how audience building changes the outcome.</p>
       </div>
     </div>
   </div>
