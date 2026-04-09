@@ -397,19 +397,6 @@ td.em { font-weight: 600; color: #111; }
       <h2>Interactive Model</h2>
     </div>
     <p class="section-sub">Monte Carlo crowdfunding projection — drag sliders to explore scenarios. 1,000 simulated runs per change.</p>
-    <!-- Scorecard -->
-    <div class="sim-card sim-scorecard no-print">
-      <div class="sim-prob" id="probBig">--</div>
-      <div class="sim-prob-label" id="probLabel">probability of funding</div>
-      <div class="sim-verdict" id="verdictBar"></div>
-      <div class="sim-stats">
-        <div class="sim-stat"><div class="sim-stat-label">Raised (median)</div><div class="sim-stat-value" id="statRaised">--</div></div>
-        <div class="sim-stat"><div class="sim-stat-label">Backers (median)</div><div class="sim-stat-value" id="statBackers">--</div></div>
-        <div class="sim-stat"><div class="sim-stat-label">Net Revenue</div><div class="sim-stat-value" id="statNet">--</div></div>
-        <div class="sim-stat"><div class="sim-stat-label">Goal</div><div class="sim-stat-value" id="statGoal">--</div></div>
-      </div>
-    </div>
-
     <!-- Controls -->
     <div class="grid md:grid-cols-2 gap-4 no-print">
       <div class="sim-card">
@@ -426,6 +413,19 @@ td.em { font-weight: 600; color: #111; }
         <div class="slider-row"><label>Duration (days)</label><input type="range" id="duration" min="15" max="60" step="1" value="30"><span class="slider-val" id="durationVal">30</span></div>
         <div class="slider-row"><label>Early bird price ($)</label><input type="range" id="ebPrice" min="99" max="179" step="5" value="149"><span class="slider-val" id="ebPriceVal">$149</span></div>
         <div class="slider-row"><label>Early bird qty</label><input type="range" id="ebQty" min="0" max="500" step="10" value="50"><span class="slider-val" id="ebQtyVal">50</span></div>
+      </div>
+    </div>
+
+    <!-- Scorecard -->
+    <div class="sim-card sim-scorecard no-print">
+      <div class="sim-prob" id="probBig">--</div>
+      <div class="sim-prob-label" id="probLabel">probability of funding</div>
+      <div class="sim-verdict" id="verdictBar"></div>
+      <div class="sim-stats">
+        <div class="sim-stat"><div class="sim-stat-label">Raised (median)</div><div class="sim-stat-value" id="statRaised">--</div></div>
+        <div class="sim-stat"><div class="sim-stat-label">Backers (median)</div><div class="sim-stat-value" id="statBackers">--</div></div>
+        <div class="sim-stat"><div class="sim-stat-label">Net Revenue</div><div class="sim-stat-value" id="statNet">--</div></div>
+        <div class="sim-stat"><div class="sim-stat-label">Goal</div><div class="sim-stat-value" id="statGoal">--</div></div>
       </div>
     </div>
 
@@ -857,11 +857,10 @@ function updateDisplay() {
   const t0 = performance.now();
   const params = {
     emailList: +$('email').value, igFollowers: +$('ig').value, fbFollowers: +$('fb').value,
-    dailyAdBudget: +$('adBudget').textContent === undefined ? 0 : +$('adBudget').value,
+    dailyAdBudget: +$('adBudget').value,
     prHits: +$('pr').value, goal: +$('goal').value,
     duration: +$('duration').value, ebPrice: +$('ebPrice').value, ebQty: +$('ebQty').value,
   };
-  params.dailyAdBudget = +$('adBudget').value;
 
   $('emailVal').textContent    = params.emailList.toLocaleString();
   $('igVal').textContent       = params.igFollowers.toLocaleString();
