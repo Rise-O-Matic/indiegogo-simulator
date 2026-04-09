@@ -217,29 +217,13 @@ td.em { font-weight: 600; color: #111; }
 </nav>
 
 <!-- HERO -->
-<header class="bg-[#0f1923] py-16 px-8">
+<header class="bg-[#0f1923] py-12 px-8">
   <div class="wrap">
-    <div class="font-mono text-xs tracking-widest text-[#21908c] uppercase mb-4">Market Analysis Report · April 2026</div>
-    <h1 class="text-3xl font-bold text-white mb-3">CLOAK by BossCovers<br><span class="text-[#21908c]">Go-to-Market Intelligence</span></h1>
-    <p class="text-sm text-white/60 mb-8">Prepared from 14,648 comparable campaigns · Monte Carlo simulation engine · Industry benchmarks</p>
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-      <div class="bg-white/5 rounded-lg p-4">
-        <span class="block text-2xl font-extrabold text-[#21908c]">43%</span>
-        <span class="text-xs text-white/50 mt-1 block">Industry campaign<br>success rate</span>
-      </div>
-      <div class="bg-white/5 rounded-lg p-4">
-        <span class="block text-2xl font-extrabold text-[#440154]">$58</span>
-        <span class="text-xs text-white/50 mt-1 block">Estimated cost to acquire<br>one customer via Meta ads</span>
-      </div>
-      <div class="bg-white/5 rounded-lg p-4">
-        <span class="block text-2xl font-extrabold text-[#35b779]">$150</span>
-        <span class="text-xs text-white/50 mt-1 block">Maximum break-even<br>customer acquisition cost</span>
-      </div>
-      <div class="bg-white/5 rounded-lg p-4">
-        <span class="block text-2xl font-extrabold text-[#fde725]" id="heroProbStat">37%</span>
-        <span class="text-xs text-white/50 mt-1 block">Current probability of<br>funding at $15K goal</span>
-      </div>
-    </div>
+    <div class="font-mono text-xs tracking-widest text-[#21908c] uppercase mb-3">Market Analysis Report · April 2026</div>
+    <h1 class="text-3xl font-bold text-white mb-2">CLOAK by BossCovers<br><span class="text-[#21908c]">Campaign Readiness vs. Median Funded Campaign</span></h1>
+    <p class="text-sm text-white/50 mb-6">Simulator result: <span class="text-[#fde725] font-bold" id="heroProbStat">—</span> probability of funding · 14,648 comparable campaigns · industry benchmarks</p>
+    <canvas id="heroChart" height="180" style="width:100%; max-height:220px;"></canvas>
+    <p class="text-xs text-white/30 mt-3 font-mono">Each bar shows BossCovers' current value as a % of the median funded campaign benchmark. Benchmark = 100%.</p>
   </div>
 </header>
 
@@ -1270,6 +1254,87 @@ function applyOptimal(params) {
 
 // Initial render
 updateDisplay();
+
+// Hero readiness chart
+(function () {
+  // BossCovers current values and benchmarks
+  // Benchmark = typical median-funded hardware/gadget campaign (LaunchBoom, KS data)
+  const dims = [
+    { label: 'Email subscribers',        bc: 50,   bench: 1000,  unit: '',   note: 'LaunchBoom: 1K minimum pre-launch' },
+    { label: 'IG + FB followers',         bc: 193,  bench: 5000,  unit: '',   note: 'Combined organic social reach' },
+    { label: 'Monthly ad budget',         bc: 0,    bench: 1500,  unit: '$',  note: 'Typical pre-launch paid spend' },
+    { label: 'Pre-launch runway (days)',  bc: 0,    bench: 60,    unit: '',   note: 'LaunchBoom 90-day system; 60d minimum' },
+    { label: 'Reservation list',          bc: 0,    bench: 300,   unit: '',   note: '$1-deposit pre-orders before launch' },
+    { label: 'Product readiness',         bc: 95,   bench: 100,   unit: '%',  note: 'Tooling done, ready to manufacture' },
+  ];
+
+  const bcPct  = dims.map(d => d.bench > 0 ? Math.round(d.bc / d.bench * 100) : 0);
+  const labels = dims.map(d => d.label);
+
+  const fmtVal = (d) => d.unit === '$' ? `$${d.bc.toLocaleString()}` : d.bc + (d.unit || '');
+  const fmtBench = (d) => d.unit === '$' ? `$${d.bench.toLocaleString()}` : d.bench + (d.unit || '');
+
+  const ctx = document.getElementById('heroChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'BossCovers today',
+          data: bcPct,
+          backgroundColor: '#21908c',
+          borderRadius: 4,
+          barPercentage: 0.55,
+        },
+        {
+          label: 'Median funded campaign',
+          data: dims.map(() => 100),
+          backgroundColor: 'rgba(255,255,255,0.10)',
+          borderRadius: 4,
+          barPercentage: 0.55,
+        },
+      ],
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: { duration: 600 },
+      scales: {
+        x: {
+          max: 110,
+          grid: { color: 'rgba(255,255,255,0.06)' },
+          ticks: {
+            color: 'rgba(255,255,255,0.35)',
+            font: { family: 'monospace', size: 10 },
+            callback: v => v + '%',
+          },
+          border: { color: 'transparent' },
+        },
+        y: {
+          grid: { display: false },
+          ticks: { color: 'rgba(255,255,255,0.65)', font: { size: 11 } },
+          border: { color: 'transparent' },
+        },
+      },
+      plugins: {
+        legend: {
+          labels: { color: 'rgba(255,255,255,0.55)', font: { size: 11 }, boxWidth: 12, padding: 16 },
+        },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => {
+              const d = dims[ctx.dataIndex];
+              if (ctx.datasetIndex === 0) return ` BossCovers: ${fmtVal(d)} (${bcPct[ctx.dataIndex]}% of benchmark)`;
+              return ` Median funded: ${fmtBench(d)}  ·  ${d.note}`;
+            },
+          },
+        },
+      },
+    },
+  });
+})();
 </script>
 
 </body>
