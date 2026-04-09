@@ -227,7 +227,120 @@ td.em { font-weight: 600; color: #111; }
       <h2>The Evidence</h2>
     </div>
     <p class="section-sub">Numbers sourced from public datasets, published fee schedules, and a calibrated Monte Carlo model. Platform fees and industry success rates are externally verified. CAC estimates and conversion figures are model outputs — not independently sourced benchmarks.</p>
-    <!-- EVIDENCE CONTENT PLACEHOLDER -->
+
+    <!-- Kickstarter benchmarks -->
+    <div class="block">
+      <h3>Crowdfunding Industry Benchmarks <span class="src">Source: Kaggle Kickstarter dataset, 14,648 comparable campaigns</span></h3>
+      <div class="stat-row">
+        <div class="stat-card"><span class="n">14,648</span><span class="l">Tech &amp; Design campaigns analyzed<br>($5K–$100K goal, $50–$500 avg pledge)</span></div>
+        <div class="stat-card"><span class="n">43%</span><span class="l">Overall campaign<br>success rate</span></div>
+        <div class="stat-card"><span class="n">245</span><span class="l">Median backers in<br>successful campaigns</span></div>
+        <div class="stat-card"><span class="n">$30,188</span><span class="l">Median amount raised<br>by successful campaigns</span></div>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Funding Goal Range</th><th>Success Rate</th><th>Median Backers (if successful)</th><th>Median Raised (if successful)</th></tr></thead>
+          <tbody>
+            <tr><td class="em">$5,000 – $10,000</td><td class="mono">54%</td><td class="mono">113</td><td class="mono">$10,890</td></tr>
+            <tr><td class="em">$10,000 – $25,000</td><td class="mono">47%</td><td class="mono">211</td><td class="mono">$23,369</td></tr>
+            <tr><td class="em">$25,000 – $100,000</td><td class="mono">38%</td><td class="mono">410+</td><td class="mono">$50,000+</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout warn">
+        <div class="callout-label">Key finding</div>
+        <p><strong>Half of all comparable campaigns raise less than $30,000.</strong> The campaigns you read about raising $500K are outliers — they typically have 50,000+ email subscribers built over 6–12 months before launch.</p>
+      </div>
+    </div>
+
+    <!-- Acquisition cost table -->
+    <div class="block">
+      <h3>Cost to Acquire One Customer <span class="src">Source: Monte Carlo simulator calibrated to Kickstarter historical data</span></h3>
+      <p class="text-sm text-gray-500 mb-4">This is the most important number. Every dollar spent acquiring a customer that costs more than your profit margin is a losing trade.</p>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Channel</th><th>How it works</th><th>Low estimate</th><th>Central estimate</th><th>High estimate</th><th>Profitable?</th></tr></thead>
+          <tbody>
+            <tr>
+              <td class="em">YouTube creator<br><small class="text-gray-400 text-xs">Gift a unit to a 200K-sub channel</small></td>
+              <td class="text-sm">Send 1 free CLOAK to a relevant creator. They review it. Viewers buy.</td>
+              <td class="mono">$3</td><td class="mono">$15–$60</td><td class="mono">$120</td>
+              <td><span class="tag-win">✓ Usually yes</span></td>
+            </tr>
+            <tr>
+              <td class="em">Reddit paid ads<br><small class="text-gray-400 text-xs">Interest targeting: 2A, preppers</small></td>
+              <td class="text-sm">Show ads in relevant subreddits. Cheap CPM, low click rate.</td>
+              <td class="mono">$50</td><td class="mono">$100–$150</td><td class="mono">$200</td>
+              <td><span class="tag-meh">~ Maybe</span></td>
+            </tr>
+            <tr>
+              <td class="em">Meta / Facebook ads<br><small class="text-gray-400 text-xs">Interest + lookalike targeting</small></td>
+              <td class="text-sm">Broad reach, higher CPM. Industry-standard for physical products.</td>
+              <td class="mono">$75</td><td class="mono">$58–$150</td><td class="mono">$250</td>
+              <td><span class="tag-meh">~ Borderline</span></td>
+            </tr>
+            <tr>
+              <td class="em">Email (warm list)<br><small class="text-gray-400 text-xs">Pre-launch opt-in subscribers</small></td>
+              <td class="text-sm">42% open, 10% CTOR, 18% page-to-backer. 5 emails total.</td>
+              <td class="mono">$0</td><td class="mono">$0–$3</td><td class="mono">$5</td>
+              <td><span class="tag-win">✓ Yes (owned channel)</span></td>
+            </tr>
+            <tr>
+              <td class="em">IndieGoGo organic<br><small class="text-gray-400 text-xs">Platform discovery</small></td>
+              <td class="text-sm">People browsing the platform find the campaign.</td>
+              <td class="mono">$0</td><td class="mono">$0 (negligible)</td><td class="mono">$0</td>
+              <td><span class="tag-meh">~ Unreliable</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Platform Cost block -->
+    <div class="block">
+      <h3>Platform Fees <span class="src">Source: IndieGoGo published fee schedule</span></h3>
+      <div class="stat-row">
+        <div class="stat-card"><span class="n">5%</span><span class="l">IndieGoGo platform fee<br>(on gross raised)</span></div>
+        <div class="stat-card"><span class="n">3%</span><span class="l">Payment processing fee<br>(on gross raised)</span></div>
+        <div class="stat-card"><span class="n">$0.20</span><span class="l">Per-transaction fee<br>(per backer)</span></div>
+        <div class="stat-card"><span class="n">8%+</span><span class="l">Total combined fee rate<br>(typical campaign)</span></div>
+      </div>
+      <div class="callout">
+        <div class="callout-label">What this means</div>
+        <p>On a $30,000 campaign with 200 backers: fees = $1,500 (platform) + $900 (processing) + $40 (per-txn) = <strong>$2,440 in fees</strong>. Direct-to-consumer via Shopify costs ~1.7–2.9% (Stripe) with no platform cut.</p>
+      </div>
+    </div>
+
+    <!-- Production Cap block -->
+    <div class="block">
+      <h3>Production Capacity <span class="src">Source: BossCovers manufacturing constraint</span></h3>
+      <div class="stat-row">
+        <div class="stat-card"><span class="n">20</span><span class="l">Units produced per day<br>(current throughput)</span></div>
+        <div class="stat-card"><span class="n">90</span><span class="l">Maximum fulfillment<br>days assumed</span></div>
+        <div class="stat-card"><span class="n">1,800</span><span class="l">Hard cap on units<br>a campaign can fulfill</span></div>
+      </div>
+      <div class="callout warn">
+        <div class="callout-label">Hard constraint</div>
+        <p>The simulator enforces a 1,800-unit ceiling on all projections. Revenue cannot exceed ~$360,000 gross regardless of audience size or ad spend. This is not a model assumption — it's a manufacturing reality.</p>
+      </div>
+    </div>
+
+    <!-- Audience Conversion block -->
+    <div class="block">
+      <h3>Audience Conversion Rates <span class="src">Source: Monte Carlo simulator (calibrated to KS data + industry benchmarks)</span></h3>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Channel</th><th>Input</th><th>Expected Backers per Campaign</th><th>Key Rate</th></tr></thead>
+          <tbody>
+            <tr><td class="em">Email list (warm)</td><td class="mono">50 subscribers</td><td class="mono">0–1</td><td class="mono">~3.8% of list</td></tr>
+            <tr><td class="em">Instagram organic</td><td class="mono">124 followers</td><td class="mono">≈ 0</td><td class="mono">0.008% of followers/post</td></tr>
+            <tr><td class="em">Facebook organic</td><td class="mono">69 followers</td><td class="mono">≈ 0</td><td class="mono">0.003% of followers/post</td></tr>
+            <tr><td class="em">Paid ads (Meta)</td><td class="mono">$0/day</td><td class="mono">0</td><td class="mono">~$58 CPA at current benchmarks</td></tr>
+            <tr><td class="em">IGG organic</td><td class="mono">Platform</td><td class="mono">0–1 total</td><td class="mono">5 visitors/day median</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 </section>
 
