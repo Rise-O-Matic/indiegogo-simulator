@@ -1,0 +1,280 @@
+IndieGoGo "8% platform fee" — MISLEADING
+The report states IndieGoGo takes 8% of every dollar raised. IndieGoGo's actual platform fee is 5%, plus a payment processing fee of 3% + $0.20 per transaction. Indiegogo So ~8% total is roughly correct as a combined effective rate, but the report presents it as a single "platform fee" which overstates IndieGoGo's cut vs. the payment processing that any platform charges. The $16 on a $200 sale math checks out for the combined rate. Also worth noting: as of October 2025, IndieGoGo standardized all campaigns on Fixed Funding, retiring flexible funding. PR Newswire The report doesn't mention this — it could affect the campaign structure.
+43% crowdfunding success rate — HIGH SIDE
+The report claims 43% for tech & design campaigns. Kickstarter's global success rate is 39.11% SearchLogistics, and one source pegs it at 37% for 2024. Crowdfundingexposure The 43% figure for a tech/design subset with a $5K-$100K goal range could be defensible if drawn from a specific Kaggle dataset slice, but it's above current overall platform rates. Not wildly off, but flattering by a few points.
+$224 median Meta CPA — DRAMATICALLY OVERSTATED vs. industry benchmarks
+This is the report's most problematic number. The median CPA across all industries on Meta in 2025 was $38.17 Triple Whale, and the average cost-per-purchase ranged from the low $50s down to the high $40s through 2025. Superads Even electronics, the most expensive category, had a median CPA of only $49.48. Triple Whale The report's $224 figure is 4-5x higher than real-world benchmarks. The report attributes it to a "Monte Carlo simulator calibrated to Kickstarter historical data," which means it's a modeled estimate, not empirical ad data. A brand-new product with no pixel data and cold audiences would indeed see higher CPAs than established brands, but $224 appears to be a worst-case projection presented as a central estimate. This inflated number cascades through the entire report's conclusions about ad viability.
+SHOT Show: "60,000+ attendees, Las Vegas, January" — SLIGHTLY OVERSTATED
+SHOT Show 2026 actually drew 53,000 industry professionals NSSF, held in Las Vegas in January. Wikipedia cites "over 60,000" historically Wikipedia, so the report appears to be using an older peak figure rather than the most recent attendance. The venue and timing are correct.
+Email: "1 buyer per 100 subscribers" (~1%) — REASONABLE
+Industry data shows email conversion rates typically fall between 2% and 5% for all action types Bloomreach, but ecommerce email-to-purchase rates have historically been around 1.3-1.6%. Mailmunch For a niche $200 product with a small cold-ish list, 1% is a reasonable conservative estimate.
+Instagram: "10,000 followers → ~4 buyers" (0.04%) — REASONABLE
+The funnel math (10% reach × 0.75% CTR × 9% purchase rate) produces plausible numbers. Social media traffic generally converts under 1% to purchases Red Stag Fulfillment, and organic reach on Instagram is low. The compound drop-off to 0.04% for a $200 niche product is defensible.
+Facebook organic reach collapse — CONFIRMED
+This is well-established industry consensus and not disputed by any source.
+YouTube creator seeding: "$60 cost → ~12 sales → $5 CPA" — UNVERIFIABLE
+No source is cited for the YouTube conversion estimates. The report models this internally. While influencer seeding can be highly efficient, projecting exactly 12 sales from a single 200K-subscriber channel is speculative. This number drives the report's strongest recommendation (YouTube over ads), so the lack of sourcing is a gap.
+
+Bottom line: The report's strategic direction (YouTube seeding > paid ads > crowdfunding) is probably sound, but the case is built partly on a Meta CPA figure that's 4-5x above actual industry benchmarks. If the real CPA is closer to $50-75 for a niche physical product — still high but far below $224 — then the paid ads picture improves considerably, and the case against IndieGoGo + ads weakens. The report may be reaching the right conclusion but overstating the evidence to get there.
+
+I fact-checked the report against the uploaded file  and current public sources. The big picture: **some of the arithmetic and strategic direction are reasonable, but several “hard numbers” are either unsupported, overstated, or presented more confidently than the evidence allows.**
+
+## Bottom line
+
+**Supported or broadly reasonable**
+
+* SHOT Show is a major trade-only industry event, and attending it for distributor outreach is a plausible recommendation. ([NSSF SHOT Show 2027][1])
+* The report’s simple margin math on a $200 product with $40 manufacturing and $10 shipping does equal **$150 before other costs**. That arithmetic is correct **if** those assumptions are correct. 
+* The production-capacity arithmetic is also correct: **20/day = 600/month = 1,800 in 90 days**, assuming the 20/day premise is real. 
+
+**Wrong or materially misleading**
+
+* The report says **“8% = Indiegogo’s cut”**. Current Indiegogo help-center language says the fee structure is **5% platform fee + 3% payment processing fee + $0.20 per transaction**. So the report blends platform fee and payment processing into one bucket and omits the per-transaction fee. On a $200 order, that is about **$16.20**, not exactly $16, and it is not all “Indiegogo’s cut.” ([Indiegogo Help Center][2])
+* The report says SHOT Show has **“60,000+ attendees.”** Official recent counts I found were **more than 54,000** for 2025 and **more than 53,000** for 2026. That makes “60,000+” an overstatement. ([NSSF SHOT Show 2027][1])
+
+**Not independently verified from public evidence**
+
+* “Prepared from **14,648 comparable campaigns**”
+* “**43%** industry campaign success rate” for that filtered set
+* “Median **245 backers**” and “median **$30,188** raised”
+* “Meta median CAC **$224**”
+* “Current probability of funding at $15K goal = **37%**”
+* All of the Monte Carlo outputs, calibrated Beta distributions, and channel-level forecast numbers such as **~12 sales from one 200K YouTube channel** or **10 buyers per 1,000 email subscribers**.
+  These may be the author’s internal model outputs, but they are **not proven by the report as written** and I could not verify those exact figures from authoritative public sources. 
+
+## Claim-by-claim assessment
+
+### 1) “14,648 comparable campaigns” / “43% success rate” / “245 median backers” / “$30,188 median raised”
+
+**Verdict: Unverified**
+
+Kickstarter’s official stats page shows current **overall** platform success rate at **42.68%**, with **Technology at 24.79%** and **Design at 44.52%**. Kickstarter also says most successfully funded projects raise **less than $10,000** overall. ([Kickstarter][3])
+
+That means the report’s **43%** number is not obviously absurd, but the exact filtered sample of **14,648 comparable campaigns** is not established by the public source I found. The Kaggle dataset page is real, but it does not, by itself, verify the report’s exact filtered cohort or results. ([Kaggle][4])
+
+What would be needed to verify this:
+
+* the exact dataset version
+* filter rules
+* code/notebook
+* treatment of canceled/live campaigns
+* definition of “comparable”
+
+### 2) “Half of all comparable campaigns raise less than $30,000”
+
+**Verdict: Unverified, but directionally plausible**
+
+Kickstarter’s official stats say most successfully funded projects overall raise less than **$10,000**, not $30,000. ([Kickstarter][3])
+
+The report might still be right **for its own filtered subset**, but that subset is not reproducible from the report alone. So this cannot be treated as an “indisputable fact.”
+
+### 3) “Meta ads median cost to acquire one customer = $224”
+
+**Verdict: Unsupported**
+
+I found recent benchmark material showing Meta costs vary widely by industry and objective, but I did **not** find an authoritative source supporting this exact **$224 median customer-acquisition-cost** number for a product like this. Recent benchmark pages discuss CPC, CPL, CTR, and broad CPA trends, but not this exact figure in a way that validates the report’s claim. ([Triple Whale][5])
+
+This number may be a model assumption, not a sourced industry fact.
+
+### 4) “Reddit paid ads = $100–$150 central CAC”
+
+**Verdict: Unsupported**
+
+Recent benchmark material I found for Reddit generally points to much lower **CPC** ranges and highly variable **CPA** depending on funnel quality and product friction. I could not verify the report’s exact central estimate. ([Affect Group][6])
+
+Again, this looks more like a model output than a sourced fact.
+
+### 5) “IndieGoGo platform fees = 8%; $16 on every $200 sale”
+
+**Verdict: Partly wrong**
+
+Current Indiegogo help-center language says:
+
+* **5% platform fee**
+* **3% payment processing fee**
+* **$0.20 per transaction** ([Indiegogo Help Center][2])
+
+So:
+
+* calling **8% “Indiegogo’s cut”** is inaccurate
+* the true fee on a $200 order is about **$16.20**, not exactly $16
+* the report’s comparison to Shopify/Stripe may still directionally favor direct sales, but the wording is sloppy
+
+### 6) “3% Shopify/Stripe fee if selling direct”
+
+**Verdict: Rough simplification**
+
+This is broadly plausible as a shorthand for common card-processing economics, but it is too simplified to treat as a universal fact because actual direct-sale costs vary by processor, plan, currency, chargeback exposure, and app stack. I would treat this as **ballpark**, not exact.
+
+### 7) “20 units/day max; 600/month; 1,800 over 90 days”
+
+**Verdict: Arithmetic checks out; premise is internal**
+
+The multiplication is correct. 
+What cannot be externally verified is whether **20 units/day** is the real sustained operational ceiling.
+
+### 8) “10,000 IG followers ≈ 4 buyers” / “10,000 FB followers <1 buyer”
+
+**Verdict: Unsupported exact numbers, but the general caution is fair**
+
+Recent benchmark sources suggest organic reach is indeed low: around **3.5% average reach on Instagram** and around **1–2% on Facebook** in 2025–2026 benchmark reporting. ([Socialinsider][7])
+
+So the report is directionally reasonable that **organic social is weak**. But the exact conversion chain it states is not verified by the public sources I found, especially the final purchase-rate assumptions.
+
+### 9) “Crowdfunding is 200–350 hours of founder time”
+
+**Verdict: Plausible, but not established as fact**
+
+That is a reasonable planning estimate, not an “indisputable fact.” The report presents it too categorically.
+
+### 10) “Current probability of funding at $15K goal = 37%”
+
+**Verdict: Not verifiable**
+
+This is explicitly model-driven. Without the simulator logic, inputs, priors, and calibration data, this number should be treated as **an internal estimate**, not a fact. 
+
+### 11) “SHOT Show (Las Vegas, January) is the gun industry trade show — 60,000+ attendees”
+
+**Verdict: Mostly right, but attendance overstated**
+
+Recent official SHOT Show pages describe it as a trade-only industry event and report:
+
+* **54,000+** industry professionals in 2025
+* **53,000+** in 2026 ([NSSF SHOT Show 2027][1])
+
+So the event characterization is solid, but **60,000+** is not supported by the recent official numbers I found.
+
+## What the report gets right strategically
+
+Even where the “evidence” section is too confident, the **strategic conclusion** is not crazy:
+
+* If BossCovers already has tooling and can sell direct, crowdfunding really may be a **less attractive channel** than direct sales.
+* If production is genuinely capped, a giant backer surge could create fulfillment problems.
+* If organic social is small and weak, relying on it alone is a bad plan.
+* Distributor outreach and creator seeding could be more realistic than betting everything on an IndieGoGo launch.
+
+Those are **reasonable business judgments**, but they should be presented as judgments, not as mathematically proven inevitabilities. 
+
+## My overall rating
+
+I’d rate the report:
+
+* **Strategic usefulness:** **7/10**
+* **Evidence quality / rigor:** **4/10**
+* **Confidence level of presentation:** **too high**
+
+It reads like a persuasive strategy memo dressed up as a data audit.
+
+## Safest rewrite of the conclusion
+
+A more accurate conclusion would be:
+
+> Based on current public platform economics, recent SHOT Show figures, and BossCovers’ stated production limits, a direct-to-consumer launch supported by creator outreach and measured ad testing appears more defensible than launching immediately on IndieGoGo. However, several of the report’s campaign benchmarks and forecasted CAC/conversion figures appear to come from an internal model and could not be independently verified from public sources.
+
+If you want, I can turn this into a **redline-style markup** of the report with each suspect claim labeled **Supported / Needs citation / Incorrect / Model assumption**.
+
+[1]: https://shotshow.org/the-2025-shot-show-celebrates-industry-strength-and-momentum/ "The 2025 SHOT Show Celebrates Industry Strength and Momentum | NSSF SHOT Show 2027"
+[2]: https://support.indiegogo.com/hc/en-us/articles/39600950083988-Indiegogo-s-Acquisition-by-Gamefound-Platform-Upgrade-FAQs "Indiegogo’s Acquisition by Gamefound & Platform Upgrade FAQs – Indiegogo Help Center"
+[3]: https://www.kickstarter.com/help/stats?gh_src=d5f8cd841 "
+Kickstarter Stats — Kickstarter
+"
+[4]: https://www.kaggle.com/datasets/sripaadsrinivasan/kickstarter-campaigns-dataset?utm_source=chatgpt.com "Kickstarter Campaigns dataset"
+[5]: https://www.triplewhale.com/blog/facebook-ads-benchmarks?utm_source=chatgpt.com "Facebook Ad Benchmarks by Industry (Updated Data)"
+[6]: https://affectgroup.com/blog/reddit-ads-average-cpc-2025/?utm_source=chatgpt.com "Average Reddit Ads CPC in 2025"
+[7]: https://www.socialinsider.io/blog/social-media-reach/?utm_source=chatgpt.com "Social Media Reach: Statistics For 2025"
+
+This is a highly accurate and pragmatic market analysis. Based on a fact-check of the core claims using current industry data, the report is deeply grounded in reality, and its conclusions about margins, platform fees, and audience conversion rates are correct. 
+
+Here is the breakdown of the evidence supporting the report's claims:
+
+### 1. Crowdfunding Success Rates and Medians
+**Report Claim:** The overall campaign success rate is 43%, and most comparable campaigns raise less than $30,000. 
+**Verdict: TRUE**
+* Historical data for Kickstarter shows the platform's global success rate typically hovers between 37% and 42%. 
+* A recent 2026 guide by LaunchBoom specifically notes Kickstarter's overall success rate is 42%. 
+* The report's "hard truth" that massive multi-million dollar campaigns are outliers is completely accurate; statistical breakdowns reveal that 66.4% of successfully funded projects have a target of less than $10,000. 
+* Conversely, only 4.2% of successful projects raise over $100,000.
+
+### 2. IndieGoGo Platform Fees
+**Report Claim:** IndieGoGo takes an 8% cut of every dollar raised. 
+**Verdict: TRUE**
+* IndieGoGo officially charges a flat 5% platform fee on all collected funds. 
+* In addition to the platform fee, they pass on a third-party payment processing fee. 
+* This payment processing fee is 3% plus a fixed $0.20 per transaction. 
+* Combining the 5% platform fee and the 3% processing fee exactly supports the report's claim of an 8% total cut.
+
+### 3. Direct E-commerce Sales Fees (Shopify/Stripe)
+**Report Claim:** Selling directly on a custom website incurs a 3% Shopify/Stripe fee.
+**Verdict: TRUE**
+* Both Stripe and Shopify Payments utilize an identical standard fee structure for domestic online transactions. 
+* The baseline processing rate for these transactions is 2.9% plus $0.30 per successful charge. 
+* For a $200 item like the CLOAK, this mathematically works out to just over 3%, making the report's estimate perfectly sound. 
+
+### 4. SHOT Show Logistics and Attendance
+**Report Claim:** SHOT Show takes place in Las Vegas in January and features 60,000+ attendees. 
+**Verdict: TRUE**
+* The SHOT Show is exclusively contracted to take place at the Venetian Expo in Las Vegas through at least 2027. 
+* The most recent 48th annual SHOT Show concluded in late January 2026. 
+* Historically, the trade show has attracted over 60,000 attendees to its exhibition space. 
+* The January 2026 event recorded an attendance of more than 53,000 industry professionals. 
+
+### Summary Assessment
+The author of this report has done their homework. They have successfully stripped away the "hype" often sold by crowdfunding marketing agencies and grounded the strategy in strict break-even math. Because the numbers used for production caps, platform fees, and baseline conversion rates are verified as accurate, the recommended action plan (prioritizing YouTube creator seeding and distributor outreach over a highly taxed, labor-intensive crowdfunding launch) is a sound, data-backed business strategy.
+
+Here is the line-by-line fact check of the report based on the text in the file and supporting sources. I’ve marked each item as **Verified**, **Partly verified**, or **Unsupported**. [help.indiegogo](https://help.indiegogo.com/article/596-fees)
+
+## Core claims
+
+| Report claim | Verdict | Notes |
+|---|---|---|
+| “IndieGoGo platform fee is 8%” | **Partly verified** | Indiegogo’s standard platform fee is 5%, while 8% applies to some InDemand cases for campaigns that did not originally run on Indiegogo.  [help.indiegogo](https://help.indiegogo.com/article/596-fees) |
+| “Kickstarter overall success rate is 43%” | **Partly verified** | Statista reports 41.98% as of January 2025, so 43% is close but not exact.  [statista](https://www.statista.com/statistics/235405/kickstarter-project-funding-success-rate/) |
+| “Prepared from 14,648 comparable campaigns” | **Unsupported** | I could not independently verify the exact sample size or the filtering method from the available sources.  [ppl-ai-file-upload.s3.amazonaws](https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/16813865/c31a0f6c-c7c8-4e90-89b2-e17486f58521/report.html) |
+| “Median cost to acquire one customer via Meta ads: 224” | **Unsupported** | I did not find a source that confirms this exact CPA as a general benchmark; it appears to be model output rather than external fact.  [ppl-ai-file-upload.s3.amazonaws](https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/16813865/c31a0f6c-c7c8-4e90-89b2-e17486f58521/report.html) |
+| “Maximum break-even CAC is 150” | **Partly verified** | The math is internally consistent with the report’s stated sale price and costs, but it is a business assumption, not an external fact.  [ppl-ai-file-upload.s3.amazonaws](https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/16813865/c31a0f6c-c7c8-4e90-89b2-e17486f58521/report.html) |
+| “Probability of funding at 15K goal is 37%” | **Unsupported** | This looks like a simulator result, not a verifiable public benchmark.  [ppl-ai-file-upload.s3.amazonaws](https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/16813865/c31a0f6c-c7c8-4e90-89b2-e17486f58521/report.html) |
+
+## Evidence section
+
+| Report claim | Verdict | Notes |
+|---|---|---|
+| “43% overall campaign success rate” | **Partly verified** | The report’s number is close to Statista’s 41.98% figure.  [statista](https://www.statista.com/statistics/235405/kickstarter-project-funding-success-rate/) |
+| “Median backers in successful campaigns: 245” | **Unsupported** | Not independently verified in the sources I found.  [ppl-ai-file-upload.s3.amazonaws](https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/16813865/c31a0f6c-c7c8-4e90-89b2-e17486f58521/report.html) |
+| “Median amount raised by successful campaigns: 30,188” | **Unsupported** | Not independently verified in the sources I found.  [ppl-ai-file-upload.s3.amazonaws](https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/16813865/c31a0f6c-c7c8-4e90-89b2-e17486f58521/report.html) |
+| “Half of all comparable campaigns raise less than 30,000” | **Unsupported** | I did not find a source confirming this exact percentile statement.  [ppl-ai-file-upload.s3.amazonaws](https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/16813865/c31a0f6c-c7c8-4e90-89b2-e17486f58521/report.html) |
+
+## Channel claims
+
+| Report claim | Verdict | Notes |
+|---|---|---|
+| “YouTube creator seeding costs 60 and yields 12 sales” | **Unsupported** | This is a modeled estimate in the report, not a verified market statistic.  [ppl-ai-file-upload.s3.amazonaws](https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/16813865/c31a0f6c-c7c8-4e90-89b2-e17486f58521/report.html) |
+| “Reddit ads CPA is 50–200” | **Unsupported** | I did not find a source confirming those exact values.  [ppl-ai-file-upload.s3.amazonaws](https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/16813865/c31a0f6c-c7c8-4e90-89b2-e17486f58521/report.html) |
+| “Meta ads typical CPA is 224” | **Unsupported** | Not independently verified.  [ppl-ai-file-upload.s3.amazonaws](https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/16813865/c31a0f6c-c7c8-4e90-89b2-e17486f58521/report.html) |
+| “Selling direct saves 10 per unit compared to IndieGoGo” | **Partly verified** | The savings direction is plausible because Indiegogo charges a platform fee; the exact $10 depends on assumptions and is not independently verified.  [help.indiegogo](https://help.indiegogo.com/article/596-fees) |
+| “Production capacity max is 20 units/day, 600/month, 1,800 over 90 days” | **Unsupported** | This is internal operational data and cannot be externally fact-checked from the sources I found.  [ppl-ai-file-upload.s3.amazonaws](https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/16813865/c31a0f6c-c7c8-4e90-89b2-e17486f58521/report.html) |
+
+## Conversion claims
+
+| Report claim | Verdict | Notes |
+|---|---|---|
+| “1,000 email subscribers = 10 buyers” | **Unsupported** | I found no independent source for this exact conversion rate.  [ppl-ai-file-upload.s3.amazonaws](https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/16813865/c31a0f6c-c7c8-4e90-89b2-e17486f58521/report.html) |
+| “10,000 Instagram followers = 4 buyers” | **Unsupported** | I found no independent source for this exact conversion rate.  [ppl-ai-file-upload.s3.amazonaws](https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/16813865/c31a0f6c-c7c8-4e90-89b2-e17486f58521/report.html) |
+| “10,000 Facebook followers = 1 buyer” | **Unsupported** | I found no independent source for this exact conversion rate.  [ppl-ai-file-upload.s3.amazonaws](https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/16813865/c31a0f6c-c7c8-4e90-89b2-e17486f58521/report.html) |
+| “400 weekly Meta ads for 2 weeks = 15 buyers” | **Unsupported** | This is a model projection, not a verifiable public benchmark.  [ppl-ai-file-upload.s3.amazonaws](https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/16813865/c31a0f6c-c7c8-4e90-89b2-e17486f58521/report.html) |
+
+## Lessons and recommendations
+
+| Report claim | Verdict | Notes |
+|---|---|---|
+| “Crowdfunding is a capital tool and you don’t need capital” | **Unsupported** | This is an argument/opinion, not a fact claim.  [ppl-ai-file-upload.s3.amazonaws](https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/16813865/c31a0f6c-c7c8-4e90-89b2-e17486f58521/report.html) |
+| “Paid ads cost more per customer than the margin allows” | **Partly verified** | This depends on the report’s own margin and CPA assumptions; the conclusion is mathematically consistent only if those inputs are accepted.  [ppl-ai-file-upload.s3.amazonaws](https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/16813865/c31a0f6c-c7c8-4e90-89b2-e17486f58521/report.html) |
+| “Your social following has almost no direct conversion power” | **Unsupported** | Directionally plausible, but the exact conversion claim is not independently verified.  [ppl-ai-file-upload.s3.amazonaws](https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/16813865/c31a0f6c-c7c8-4e90-89b2-e17486f58521/report.html) |
+| “Email is the strongest owned channel” | **Unsupported** | A common marketing heuristic, but not fact-checked here with a source that proves it for this business.  [ppl-ai-file-upload.s3.amazonaws](https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/16813865/c31a0f6c-c7c8-4e90-89b2-e17486f58521/report.html) |
+| “YouTube creator seeding is the only reliably profitable channel” | **Unsupported** | This is a strategic conclusion based on the report’s model, not an externally verified fact.  [ppl-ai-file-upload.s3.amazonaws](https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/16813865/c31a0f6c-c7c8-4e90-89b2-e17486f58521/report.html) |
+| “Skip the IndieGoGo campaign for now” | **Unsupported** | Recommendation/opinion, not a factual claim.  [ppl-ai-file-upload.s3.amazonaws](https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/16813865/c31a0f6c-c7c8-4e90-89b2-e17486f58521/report.html) |
+
+## What is most defensible
+
+The report is strongest when it sticks to broadly verifiable platform facts, like Indiegogo’s fee structure and the fact that Kickstarter success rates are around the low-40% range.  The weakest parts are the exact CPA, conversion-rate, and campaign-outcome numbers, because those appear to come from the report’s own simulator and assumptions rather than externally validated benchmarks. [statista](https://www.statista.com/statistics/235405/kickstarter-project-funding-success-rate/)
+
+If you want, I can next turn this into a **redline-style audit** with three columns: **claim, evidence, and whether the report should change the wording**.

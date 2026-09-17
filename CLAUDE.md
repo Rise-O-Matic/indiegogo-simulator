@@ -28,6 +28,12 @@ pip install -r requirements.txt
 
 # Launch the notebook
 jupyter notebook notebooks/cloak-campaign-simulator.ipynb
+
+# Run CMA-ES calibration (requires Kickstarter CSV in data/kickstarter/)
+python -m src.calibrate
+
+# Apply saved calibration results to distributions.py
+python -m src.calibrate --apply data/calibrated-params.json
 ```
 
 ## Architecture
@@ -41,6 +47,11 @@ SimulationInputs (audience sizes, budgets)
   -> simulation.py: 10K Monte Carlo runs -> SimulationResults (percentiles, P(funded))
   -> gap.py / sensitivity.py: bisection search and tornado analysis over the simulation
   -> viz.py: matplotlib charts, pandas tables, text scorecards
+
+Kickstarter CSV (data/kickstarter/)
+  -> data_loader.py: filter to comparable campaigns
+  -> calibrate.py: CMA-ES optimization of 20-dim parameter vector
+  -> data/calibrated-params.json -> apply_params() rewrites distributions.py
 ```
 
 ### Module responsibilities
@@ -56,6 +67,7 @@ SimulationInputs (audience sizes, budgets)
 - **market.py** -- Addressable market sizing and saturation feasibility checks
 - **demand.py** -- Demand signal scoring (direct/indirect/category) with a validation playbook
 - **data_loader.py** -- Loads Kickstarter CSV (gitignored, large) and IGG comparables JSON
+- **calibrate.py** -- CMA-ES joint calibration of the 20-dimensional distribution parameter vector (16 Beta means + 4 LogNormal scales) against Kickstarter historical output distributions. Uses logit encoding for Beta means and log encoding for LogNormal scales. Run as `python -m src.calibrate`; apply results with `--apply`.
 - **viz.py** -- All visualization: fan charts, tornado charts, gap tables, scorecards, scenario comparisons
 
 ### Key design decisions
@@ -64,6 +76,8 @@ SimulationInputs (audience sizes, budgets)
 - Conversion rates use scipy.stats distributions (Beta/LogNormal), sampled once per simulation run (not per day).
 - Word-of-mouth is the only feedback loop: it reads cumulative backers from other sources and adds referral-driven backers on a one-day lag.
 - Gap analysis runs many smaller simulations (n_runs=300-500) via bisection, so it's the slowest operation.
+- Calibration (`calibrate.py`) monkey-patches `distributions` module in-place during the optimization loop; `apply_params()` rewrites the `.py` source file with a regex and backs up the original as `distributions.py.bak`.
+- The calibrate module docstring says "23-dimensional" but the actual `PARAM_REGISTRY` has 20 entries (16 Beta + 4 LogNormal). The test `test_param_count` asserts `NDIM == 20`.
 
 ## Data
 
@@ -71,6 +85,8 @@ SimulationInputs (audience sizes, budgets)
 - `data/meta-insights-2026-04-07.md` -- Summarized Meta insights for simulator calibration
 - `data/kickstarter/` -- Gitignored. Expects `ks-projects-201801.csv` from Kaggle
 - `data/igg-comparables.json` -- Manually researched IndieGoGo comparable campaigns (may not exist yet)
+- `data/calibrated-params.json` -- Output of `calibrate.py`; best parameter vector + decoded params + loss history
+- `data/calibration-history.json` -- Per-eval loss history from CMA-ES run
 
 ## Confidence Tier System
 
